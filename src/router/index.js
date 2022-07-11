@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-08 17:09:43
- * @LastEditTime: 2022-07-11 15:31:08
+ * @LastEditTime: 2022-07-11 17:33:42
  * @LastEditors: wsy
  */
 
@@ -25,4 +25,4 @@ router.afterEach((to, from) => {
 async function setupRouter(app) {
   app.use(router)
 }
-export { setupRouter }
+export { router, setupRouter }

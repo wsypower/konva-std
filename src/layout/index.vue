@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-11 15:30:05
- * @LastEditTime: 2022-07-11 17:07:33
+ * @LastEditTime: 2022-07-11 17:38:02
  * @LastEditors: wsy
 -->
 <template>
@@ -19,6 +19,11 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+  const { API_DEMO_POST } = useRequest()
+  API_DEMO_POST().then((res) => {
+    console.info(res)
+  })
+</script>
 
 <style lang="scss" scoped></style>

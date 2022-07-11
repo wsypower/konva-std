@@ -46,13 +46,6 @@ export default ({ mode, command }) => {
         layout: path.resolve(__dirname, 'src/layout')
       }
     },
-    // css: {
-    //   preprocessorOptions: {
-    //     scss: {
-    //       additionalData: '@use "@/style/scss/globals.scss" as *;'
-    //     }
-    //   }
-    // },
     define: {
       __DEV__: mode === 'development',
       __TEST__: mode === 'test'
