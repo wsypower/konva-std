@@ -2,20 +2,20 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-08 15:21:59
- * @LastEditTime: 2022-07-11 15:18:27
+ * @LastEditTime: 2022-07-11 16:14:01
  * @LastEditors: wsy
 -->
 <template>
-  <HelloWorld msg="Hello Vue 3 + Vite" />
+  <el-config-provider v-bind="elementUIProvider">
+    <RouterView />
+  </el-config-provider>
 </template>
-<script setup></script>
-<style>
-  #app {
-    margin-top: 60px;
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    color: #2c3e50;
-    text-align: center;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-</style>
+<script setup>
+  import zhCn from 'element-plus/lib/locale/lang/zh-cn'
+  const elementUIProvider = ref({
+    button: {
+      autoInsertSpace: true
+    },
+    locale: zhCn
+  })
+</script>

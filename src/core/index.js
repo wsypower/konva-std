@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-08 17:09:39
- * @LastEditTime: 2022-07-11 15:20:58
+ * @LastEditTime: 2022-07-11 16:25:17
  * @LastEditors: wsy
  */
 /*
@@ -22,7 +22,8 @@
  */
 
 import directive from '@/directive'
-// import ElementPlus from 'element-plus'
+import ElementPlus from 'element-plus'
+
 // import * as ElementIcons from '@element-plus/icons-vue';
 // import '@/assets/styles/globals.scss';
 const core = {
@@ -32,9 +33,7 @@ const core = {
     // for (let key in ElementIcons) {
     //   app.component(`ElIcon${ElementIcons[key].name}`, ElementIcons[key]);
     // }
-    // app.use(ElementPlus, {
-    //   size: useSettingsOutsideStore().app.componentSize,
-    // });
+    app.use(ElementPlus)
   }
 }
 export function setupCore(app) {

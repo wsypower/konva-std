@@ -43,17 +43,16 @@ export default ({ mode, command }) => {
         assets: path.resolve(__dirname, 'src/assets'),
         util: path.resolve(__dirname, 'src/util'),
         views: path.resolve(__dirname, 'src/views'),
-        layout: path.resolve(__dirname, 'src/layout'),
-        settings: path.resolve(__dirname, 'src/settings/settings')
+        layout: path.resolve(__dirname, 'src/layout')
       }
     },
-    css: {
-      preprocessorOptions: {
-        scss: {
-          // additionalData: scssResources.join(''),
-        }
-      }
-    },
+    // css: {
+    //   preprocessorOptions: {
+    //     scss: {
+    //       additionalData: '@use "@/style/scss/globals.scss" as *;'
+    //     }
+    //   }
+    // },
     define: {
       __DEV__: mode === 'development',
       __TEST__: mode === 'test'

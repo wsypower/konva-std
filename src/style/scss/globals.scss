@@ -1,0 +1,38 @@
+@use './element/index.scss' as *;
+@use './element/dark.scss' as *;
+
+::-webkit-scrollbar {
+  width: 13px;
+  height: 13px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(0 0 0 / 40%);
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 7px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(0 0 0 / 50%);
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-track:hover {
+  background-color: #f8fafc;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  box-sizing: border-box;
+  margin: 0;
+  font-family: Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
