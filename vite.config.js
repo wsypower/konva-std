@@ -10,13 +10,13 @@
 /*                                                                                                           */
 /* ********************************************************************************************************* */
 
-import { defineConfig, loadEnv } from 'vite';
-import createVitePlugins from './build/vite/plugins';
-import { wrapperEnv } from './build/vite/utils';
-import path from 'path';
+import { defineConfig, loadEnv } from 'vite'
+import createVitePlugins from './build/vite/plugins'
+import { wrapperEnv } from './build/vite/utils'
+import path from 'path'
 export default ({ mode, command }) => {
-  const env = wrapperEnv(loadEnv(mode, process.cwd()));
-  const PROJECT_NAME = env.VITE_APP_PROJECT;
+  const env = wrapperEnv(loadEnv(mode, process.cwd()))
+  const PROJECT_NAME = env.VITE_APP_PROJECT
   return defineConfig({
     base: './',
     server: {
@@ -27,14 +27,14 @@ export default ({ mode, command }) => {
         '/proxy': {
           target: env.VITE_APP_API_BASEURL,
           changeOrigin: command === 'serve' && env.VITE_OPEN_PROXY,
-          rewrite: (path) => path.replace(/\/proxy/, ''),
-        },
-      },
+          rewrite: (path) => path.replace(/\/proxy/, '')
+        }
+      }
     },
     build: {
       outDir: mode == 'production' ? PROJECT_NAME : `${PROJECT_NAME}-${mode}`,
       sourcemap: env.VITE_BUILD_SOURCEMAP,
-      minify: true,
+      minify: true
     },
     plugins: createVitePlugins(env, command === 'build'),
     resolve: {
@@ -44,19 +44,19 @@ export default ({ mode, command }) => {
         util: path.resolve(__dirname, 'src/util'),
         views: path.resolve(__dirname, 'src/views'),
         layout: path.resolve(__dirname, 'src/layout'),
-        settings: path.resolve(__dirname, 'src/settings/settings'),
-      },
+        settings: path.resolve(__dirname, 'src/settings/settings')
+      }
     },
     css: {
       preprocessorOptions: {
         scss: {
           // additionalData: scssResources.join(''),
-        },
-      },
+        }
+      }
     },
     define: {
       __DEV__: mode === 'development',
-      __TEST__: mode === 'test',
-    },
-  });
-};
+      __TEST__: mode === 'test'
+    }
+  })
+}

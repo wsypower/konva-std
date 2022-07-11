@@ -1,4 +1,11 @@
 /*
+ * @Description:
+ * @Author: wsy
+ * @Date: 2022-07-08 17:09:39
+ * @LastEditTime: 2022-07-11 15:20:58
+ * @LastEditors: wsy
+ */
+/*
  *  ┌─────────────────────────────────────────────────────────────┐
  *  │┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐│
  *  ││Esc│!1 │@2 │#3 │$4 │%5 │^6 │&7 │*8 │(9 │)0 │_- │+= │|\ │`~ ││
@@ -14,13 +21,13 @@
  *  └─────────────────────────────────────────────────────────────┘
  */
 
-import directive from '@/directive';
-import ElementPlus from 'element-plus';
+import directive from '@/directive'
+// import ElementPlus from 'element-plus'
 // import * as ElementIcons from '@element-plus/icons-vue';
 // import '@/assets/styles/globals.scss';
 const core = {
   install: (app) => {
-    app.use(directive);
+    app.use(directive)
     // // 将 element-plus 的图标库注册到全局key
     // for (let key in ElementIcons) {
     //   app.component(`ElIcon${ElementIcons[key].name}`, ElementIcons[key]);
@@ -28,8 +35,8 @@ const core = {
     // app.use(ElementPlus, {
     //   size: useSettingsOutsideStore().app.componentSize,
     // });
-  },
-};
+  }
+}
 export function setupCore(app) {
-  app.use(core);
+  app.use(core)
 }
