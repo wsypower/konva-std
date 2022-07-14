@@ -5,8 +5,8 @@
  * @LastEditTime: 2022-07-11 14:18:17
  * @LastEditors: wsy
  */
-import console from 'consola';
-import { kebabCase } from 'lodash-es';
+import console from 'consola'
+import { kebabCase } from 'lodash-es'
 
 function validatorModules(obj) {
   const vueDirectiveKeys = [
@@ -16,29 +16,27 @@ function validatorModules(obj) {
     'beforeUpdate',
     'updated',
     'beforeUnmount',
-    'unmounted',
-  ];
-  return vueDirectiveKeys.some((key) => Reflect.has(obj, key));
+    'unmounted'
+  ]
+  return vueDirectiveKeys.some((key) => Reflect.has(obj, key))
 }
 
 export default {
   install: (app) => {
-    const directiveModules = import.meta.globEager('./modules/*.js');
+    const directiveModules = import.meta.globEager('./modules/*.js')
     Object.keys(directiveModules).forEach((key) => {
-      const directiveName = key.replace(/^\.\/modules\/(.*)\.js$/, '$1');
-      const modules = directiveModules[key].default;
+      const directiveName = key.replace(/^\.\/modules\/(.*)\.js$/, '$1')
+      const modules = directiveModules[key].default
       if (typeof modules === 'function' || typeof modules === 'object') {
         if (typeof modules === 'object' && !validatorModules(modules)) {
           console.error(
             `${directiveName} 应该包含 created | beforeMount | mounted | beforeUpdate | updated | beforeUnmount | unmounted 等接口`
-          );
+          )
         }
-        app.directive(kebabCase(directiveName), modules);
+        app.directive(kebabCase(directiveName), modules)
       } else {
-        console.error(
-          `directive 模块的 ${directiveName}.js 导出的不是一个对象或者函数`
-        );
+        console.error(`directive 模块的 ${directiveName}.js 导出的不是一个对象或者函数`)
       }
-    });
-  },
-};
+    })
+  }
+}

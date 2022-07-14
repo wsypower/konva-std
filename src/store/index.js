@@ -5,8 +5,8 @@
  * @LastEditTime: 2022-07-11 14:19:44
  * @LastEditors: wsy
  */
-import { createPinia } from 'pinia';
-export const piniaStore = createPinia();
+import { createPinia } from 'pinia'
+export const piniaStore = createPinia()
 export function setupStore(app) {
-  app.use(piniaStore);
+  app.use(piniaStore)
 }
