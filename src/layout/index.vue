@@ -2,24 +2,24 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-11 15:30:05
- * @LastEditTime: 2022-07-11 17:38:02
+ * @LastEditTime: 2022-07-14 14:43:25
  * @LastEditors: wsy
 -->
 <template>
-  <div class="w-full h-full">
-    这是测试页面
-    <el-button type="primary">Primary</el-button>
-    <el-button type="success">Success</el-button>
-    <el-button type="info">Info</el-button>
-    <el-button type="warning">Warning</el-button>
-    <el-button type="danger">Danger</el-button>
-    <el-button icon="list">中文</el-button>
-    <i-ep-list></i-ep-list>
-    <!-- <el-icon><IEpChatDotRound /></el-icon> -->
+  <div class="flex flex-col w-full h-full bg-red-500">
+    <header class="w-full h-[68px] flex-none">
+      <LayoutHeader />
+    </header>
+    <main class="w-full h-[0px] flex-auto">
+      <LayoutContainer />
+    </main>
   </div>
 </template>
 
 <script setup>
+  import LayoutHeader from './components/LayoutHeader.vue'
+  import LayoutContainer from './components/LayoutContainer.vue'
+
   const { API_DEMO_POST } = useRequest()
   API_DEMO_POST().then((res) => {
     console.info(res)
