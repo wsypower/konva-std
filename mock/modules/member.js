@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-02-08 17:24:53
- * @LastEditTime: 2022-06-14 15:59:59
+ * @LastEditTime: 2022-07-14 16:46:09
  * @LastEditors: wsy
  */
 export default [
@@ -24,18 +24,8 @@ export default [
   {
     url: '/mock/member/permission',
     method: 'get',
-    response: (option) => {
-      let permissions = []
-      if (option.query.account == 'admin') {
-        permissions = [
-          'permission.browse',
-          'permission.create',
-          'permission.edit',
-          'permission.remove'
-        ]
-      } else if (option.query.account == 'test') {
-        permissions = ['permission.browse']
-      }
+    response: () => {
+      let permissions = ['home']
       return {
         code: 200,
         msg: 'success',

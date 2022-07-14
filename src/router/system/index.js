@@ -2,11 +2,16 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-14 14:51:22
- * @LastEditTime: 2022-07-14 14:53:35
+ * @LastEditTime: 2022-07-14 20:19:42
  * @LastEditors: wsy
  */
-
+const Layout = () => import('@/layout/index.vue')
 export const constantRoutes = [
+  {
+    path: '/',
+    name: 'index',
+    component: Layout
+  },
   {
     path: '/login',
     name: 'login',
