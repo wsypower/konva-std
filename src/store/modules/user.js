@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-05-11 16:21:57
- * @LastEditTime: 2022-07-11 17:27:12
+ * @LastEditTime: 2022-07-15 15:11:50
  * @LastEditors: wsy
  */
 import { defineStore } from 'pinia'
@@ -72,7 +72,6 @@ export const useUserStore = defineStore('user', {
      */
     async logout() {
       const params = useUrlSearchParams('history')
-
       params.token = ''
       storage.local.remove('account')
       storage.local.remove('token')
@@ -81,9 +80,6 @@ export const useUserStore = defineStore('user', {
       this.token = ''
       this.failure_time = ''
       this.permissions = []
-      // tabbarStore.clean()
-      // routeStore.removeRoutes()
-      // menuStore.setActived(0)
     },
     // 获取我的权限
     getPermissions() {

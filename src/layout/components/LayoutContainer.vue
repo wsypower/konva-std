@@ -2,11 +2,19 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-14 14:39:15
- * @LastEditTime: 2022-07-14 14:47:53
+ * @LastEditTime: 2022-07-15 16:30:13
  * @LastEditors: wsy
 -->
 <template>
-  <div class="w-full h-full"> container </div>
+  <div class="w-full h-full">
+    <router-view v-slot="{ Component, route }">
+      <transition name="main" mode="out-in" appear>
+        <keep-alive>
+          <component :is="Component" :key="route.fullPath" />
+        </keep-alive>
+      </transition>
+    </router-view>
+  </div>
 </template>
 
 <script setup></script>

@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-08 17:09:43
- * @LastEditTime: 2022-07-14 20:20:54
+ * @LastEditTime: 2022-07-15 17:50:57
  * @LastEditors: wsy
  */
 
@@ -34,7 +34,11 @@ router.beforeEach(async (to, from, next) => {
       if (to.name === 'login') {
         next({ path: '/' })
       } else {
-        next()
+        if (to.path === '/') {
+          next({ path: routeStore.firstRouterPath, replace: true })
+        } else {
+          next()
+        }
       }
     } else {
       await routeStore.generateRoutesAtFront(screen, isAuthority)
