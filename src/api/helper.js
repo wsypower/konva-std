@@ -2,12 +2,13 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-05-10 22:15:36
- * @LastEditTime: 2022-05-24 15:10:28
+ * @LastEditTime: 2022-07-18 16:20:58
  * @LastEditors: wsy
  */
 import { router } from '@/router/index'
 import { ElMessage } from 'element-plus'
 import { useUserOutsideStore } from '@/store/modules/user'
+import { throttle } from 'lodash-es'
 import consola from 'consola'
 
 export const httpLogError = (error, msg) => {
@@ -43,6 +44,7 @@ export const toLogin = () => {
   })
 }
 
+export const throttleToLogin = throttle(toLogin, 2000, { leading: true, trailing: false })
 export const validator = (key) => {
   if (!key.startsWith('API_')) {
     consola.warn(`api名称必须以API_为开头,${key} 应改为 API_${key}`)

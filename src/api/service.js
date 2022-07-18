@@ -2,14 +2,14 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-02-08 17:24:53
- * @LastEditTime: 2022-07-11 17:34:16
+ * @LastEditTime: 2022-07-18 16:21:22
  * @LastEditors: wsy
  */
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { useUserOutsideStore } from '@/store/modules/user'
 import { get } from 'lodash-es'
-import { httpLogError, requestError, toLogin } from './helper'
+import { httpLogError, requestError, throttleToLogin } from './helper'
 import consola from 'consola'
 export function createService() {
   const request = axios.create()
@@ -46,7 +46,7 @@ export function createService() {
             return data
           // code === 400001004 代表token 过期打回登录页
           case '400001004':
-            toLogin()
+            throttleToLogin()
             break
           case '400002001':
           case '400001002':
