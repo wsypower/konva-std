@@ -4,6 +4,9 @@
     "mikestead.dotenv",
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
-    "bradlc.vscode-tailwindcss"
+    "antfu.unocss",
+    "antfu.iconify",
+    "vue.volar",
+    "csstools.postcss"
   ]
 }
