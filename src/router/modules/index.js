@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-02-08 17:24:53
- * @LastEditTime: 2022-07-15 17:48:36
+ * @LastEditTime: 2022-08-02 17:38:49
  * @LastEditors: wsy
  */
 const demo = () => import('@/views/system/demo/index.vue')
@@ -21,7 +21,7 @@ export default [
         path: 'home',
         component: () => import('@/views/system/demo/container.vue'),
         meta: {
-          title: '面包屑导航',
+          title: '首页',
           icon: 'icon-cup'
         }
       },
@@ -87,6 +87,26 @@ export default [
         meta: {
           title: '面包屑导航',
           icon: 'icon-cup'
+        }
+      }
+    ]
+  },
+  {
+    path: '/test',
+    component: Layout,
+    redirect: '/test/test1',
+    meta: {
+      title: '面包屑导航',
+      icon: 'icon-cup'
+    },
+    children: [
+      {
+        path: 'test1',
+        component: demo,
+        meta: {
+          title: '面包屑导航',
+          icon: 'icon-cup',
+          cache: true
         }
       }
     ]

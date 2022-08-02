@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-15 17:50:51
- * @LastEditTime: 2022-08-02 16:39:58
+ * @LastEditTime: 2022-08-02 17:15:57
  * @LastEditors: wsy
 -->
 <template>
@@ -17,12 +17,14 @@
       :class="[index === 1 && 'col-span-2 row-span-2 bg-yellow-800']"
       v-for="(item, index) in layout"
       :key="index"
+      @click="clickHandler"
       >{{ item }}</div
     >
   </div>
 </template>
 
 <script setup>
+  const router = useRouter()
   const layout = [
     '展示一',
     '地图组件',
@@ -34,4 +36,9 @@
     '展示七',
     '展示八'
   ]
+
+  function clickHandler() {
+    console.info('clickHandler')
+    router.push('/test/test1')
+  }
 </script>
