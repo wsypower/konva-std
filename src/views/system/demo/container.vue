@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-15 17:50:51
- * @LastEditTime: 2022-08-02 16:31:44
+ * @LastEditTime: 2022-08-02 16:39:58
  * @LastEditors: wsy
 -->
 <template>
@@ -14,6 +14,7 @@
       text="lg white"
       font="bold"
       bg="slate-700"
+      :class="[index === 1 && 'col-span-2 row-span-2 bg-yellow-800']"
       v-for="(item, index) in layout"
       :key="index"
       >{{ item }}</div
