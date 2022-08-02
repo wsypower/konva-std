@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-14 15:24:13
- * @LastEditTime: 2022-07-15 17:45:44
+ * @LastEditTime: 2022-08-02 19:08:58
  * @LastEditors: wsy
  */
 import { defineStore } from 'pinia'
@@ -41,7 +41,9 @@ function filterAsyncRoutes(routes, permissions) {
 }
 function flatAsyncRoutes(routes, baseUrl = '') {
   let res = []
-  routes.forEach((route) => {
+  routes.forEach((route, index) => {
+    route.meta = route.meta || {}
+    route.meta.index = index + 1
     if (route.children) {
       let childrenBaseUrl = ''
       if (baseUrl == '') {
@@ -84,19 +86,22 @@ export const useRouteStore = defineStore('route', {
   state: () => ({
     isGenerate: false,
     routes: [],
-    currentRemoveRoutes: []
+    currentRemoveRoutes: [],
+    direction: ''
   }),
   getters: {
     // 扁平化路由（将三级及以上路由数据拍平成二级）
     flatRoutes: (state) => {
-      return state.routes.map((item) =>
-        item.children
+      return state.routes.map((item, index) => {
+        item.meta = item.meta || {}
+        item.meta.index = index + 1
+        return item.children
           ? {
               ...item,
               children: flatAsyncRoutes(item.children, item.path)
             }
           : item
-      )
+      })
     },
     firstRouterPath() {
       const routerHead = head(this.flatRoutes)
@@ -130,6 +135,55 @@ export const useRouteStore = defineStore('route', {
         removeRoute()
       })
       this.currentRemoveRoutes = []
+    },
+    routerDirection(to, from) {
+      const direction = {
+        init: '',
+        top: '',
+        bottom: '',
+        left: '',
+        right: ''
+      }
+      const toMatch = to.fullPath.split('/').filter(Boolean)
+      const fromMatch = from.fullPath.split('/').filter(Boolean)
+      if (fromMatch.length === 0) {
+        this.direction = direction['init']
+        return
+      }
+      let l = 0
+      let r = 0
+      while (fromMatch.length && toMatch.length) {
+        if (fromMatch[l] === toMatch[r]) {
+          l++
+          r++
+        } else {
+          break
+        }
+      }
+      const level = l
+      if (l < fromMatch.length) {
+        l += fromMatch.length - l
+      }
+      if (r < toMatch.length) {
+        r += toMatch.length - r
+      }
+      if (l === r) {
+        const toIndex = to.matched[level].meta.index
+        const fromIndex = from.matched[level].meta.index
+        if (toIndex > fromIndex) {
+          console.info('右')
+          this.direction = direction['right']
+        } else {
+          console.info('左')
+          this.direction = direction['left']
+        }
+      } else {
+        if (l > r) {
+          this.direction = direction['top']
+        } else {
+          this.direction = direction['bottom']
+        }
+      }
     }
   }
 })

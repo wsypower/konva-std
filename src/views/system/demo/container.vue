@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-15 17:50:51
- * @LastEditTime: 2022-08-02 17:15:57
+ * @LastEditTime: 2022-08-02 18:38:31
  * @LastEditors: wsy
 -->
 <template>
@@ -17,7 +17,7 @@
       :class="[index === 1 && 'col-span-2 row-span-2 bg-yellow-800']"
       v-for="(item, index) in layout"
       :key="index"
-      @click="clickHandler"
+      @click="clickHandler(index)"
       >{{ item }}</div
     >
   </div>
@@ -37,8 +37,11 @@
     '展示八'
   ]
 
-  function clickHandler() {
-    console.info('clickHandler')
-    router.push('/test/test1')
+  function clickHandler(index) {
+    if (index == 1) {
+      router.push('/index/home/test1')
+    } else {
+      router.push('/test/test1')
+    }
   }
 </script>

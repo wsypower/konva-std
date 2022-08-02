@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-08 17:09:43
- * @LastEditTime: 2022-08-02 17:30:01
+ * @LastEditTime: 2022-08-02 19:09:52
  * @LastEditors: wsy
  */
 
@@ -45,7 +45,7 @@ router.beforeEach(async (to, from, next) => {
     } else {
       await routeStore.generateRoutesAtFront(screen, isAuthority)
       let removeRoutes = []
-      routeStore.routes.forEach((route) => {
+      routeStore.flatRoutes.forEach((route) => {
         removeRoutes.push(router.addRoute(route))
       })
       removeRoutes.push(router.addRoute(lastRoute))
@@ -67,6 +67,7 @@ router.beforeEach(async (to, from, next) => {
 })
 
 router.afterEach((to, from) => {
+  const routeStore = useRouteOutsideStore()
   const routerTitle = to.meta.title
   const rawTitle = typeof routerTitle === 'function' ? routerTitle() : routerTitle
   const title = useTitle()
@@ -74,6 +75,7 @@ router.afterEach((to, from) => {
     ? `${import.meta.env.VITE_APP_TITLE} | ${rawTitle}`
     : import.meta.env.VITE_APP_TITLE
   closeNProgress()
+  routeStore.routerDirection(to, from)
   keepAliveHelper(to, from)
 })
 
