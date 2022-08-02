@@ -2,15 +2,15 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-11 15:30:05
- * @LastEditTime: 2022-07-14 14:43:25
+ * @LastEditTime: 2022-08-02 16:25:52
  * @LastEditors: wsy
 -->
 <template>
-  <div class="flex flex-col w-full h-full bg-red-500">
-    <header class="w-full h-[68px] flex-none">
+  <div flex="~ col" w="full" h="full" bg="red-500">
+    <header w="full" flex="none" h="68px">
       <LayoutHeader />
     </header>
-    <main class="w-full h-[0px] flex-auto">
+    <main w="full" flex="auto" h="0px">
       <LayoutContainer />
     </main>
   </div>
@@ -25,5 +25,3 @@
     console.info(res)
   })
 </script>
-
-<style lang="scss" scoped></style>

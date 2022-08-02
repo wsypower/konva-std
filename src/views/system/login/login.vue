@@ -2,11 +2,11 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-14 14:48:32
- * @LastEditTime: 2022-07-14 20:17:23
+ * @LastEditTime: 2022-08-02 16:33:14
  * @LastEditors: wsy
 -->
 <template>
-  <div class="w-full h-full"> login <el-button @click="login">登录按钮</el-button> </div>
+  <div w-full h-full> login <el-button @click="login">登录按钮</el-button> </div>
 </template>
 
 <script setup>

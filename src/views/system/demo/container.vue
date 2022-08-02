@@ -1,8 +1,19 @@
+<!--
+ * @Description:
+ * @Author: wsy
+ * @Date: 2022-07-15 17:50:51
+ * @LastEditTime: 2022-08-02 16:31:44
+ * @LastEditors: wsy
+-->
 <template>
-  <div class="grid w-full h-full grid-cols-4 grid-rows-3 gap-4">
+  <div w="full" h="full" grid="~ cols-4 row-3 gap-4">
     <div
-      class="flex items-center justify-center text-lg font-bold text-white bg-slate-700"
-      :class="[index === 1 && 'col-span-2 row-span-2 bg-yellow-800']"
+      flex
+      items-center
+      justify-center
+      text="lg white"
+      font="bold"
+      bg="slate-700"
       v-for="(item, index) in layout"
       :key="index"
       >{{ item }}</div
@@ -23,5 +34,3 @@
     '展示八'
   ]
 </script>
-
-<style lang="scss" scoped></style>
