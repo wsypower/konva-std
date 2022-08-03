@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-14 15:24:13
- * @LastEditTime: 2022-08-02 19:08:58
+ * @LastEditTime: 2022-08-03 15:12:13
  * @LastEditors: wsy
  */
 import { defineStore } from 'pinia'
@@ -139,10 +139,10 @@ export const useRouteStore = defineStore('route', {
     routerDirection(to, from) {
       const direction = {
         init: '',
-        top: '',
-        bottom: '',
-        left: '',
-        right: ''
+        top: 'rotate-glue-top-to-bottom',
+        bottom: 'rotate-glue-bottom-to-top',
+        left: 'rotate-glue-left-to-right',
+        right: 'rotate-glue-right-to-left'
       }
       const toMatch = to.fullPath.split('/').filter(Boolean)
       const fromMatch = from.fullPath.split('/').filter(Boolean)
@@ -171,10 +171,8 @@ export const useRouteStore = defineStore('route', {
         const toIndex = to.matched[level].meta.index
         const fromIndex = from.matched[level].meta.index
         if (toIndex > fromIndex) {
-          console.info('右')
           this.direction = direction['right']
         } else {
-          console.info('左')
           this.direction = direction['left']
         }
       } else {

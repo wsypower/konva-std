@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-02-08 17:24:53
- * @LastEditTime: 2022-08-02 18:37:52
+ * @LastEditTime: 2022-08-03 15:21:41
  * @LastEditors: wsy
  */
 const demo = () => import('@/views/system/demo/index.vue')
@@ -13,8 +13,7 @@ export default [
     component: Layout,
     redirect: '/index/home',
     meta: {
-      title: '面包屑导航',
-      icon: 'icon-cup'
+      title: '测试布局'
     },
     children: [
       {
@@ -22,71 +21,14 @@ export default [
         component: () => import('@/views/system/demo/container.vue'),
         meta: {
           title: '首页',
-          icon: 'icon-cup'
+          icon: '测试首页'
         },
         children: [
           {
             path: 'test1',
             component: demo,
             meta: {
-              title: '面包屑导航',
-              icon: 'icon-cup'
-            }
-          },
-          {
-            path: 'test2',
-            component: demo,
-            meta: {
-              title: '面包屑导航',
-              icon: 'icon-cup'
-            }
-          },
-          {
-            path: 'test3',
-            component: demo,
-            meta: {
-              title: '面包屑导航',
-              icon: 'icon-cup'
-            }
-          },
-          {
-            path: 'test4',
-            component: demo,
-            meta: {
-              title: '面包屑导航',
-              icon: 'icon-cup'
-            }
-          },
-          {
-            path: 'test5',
-            component: demo,
-            meta: {
-              title: '面包屑导航',
-              icon: 'icon-cup'
-            }
-          },
-          {
-            path: 'test6',
-            component: demo,
-            meta: {
-              title: '面包屑导航',
-              icon: 'icon-cup'
-            }
-          },
-          {
-            path: 'test7',
-            component: demo,
-            meta: {
-              title: '面包屑导航',
-              icon: 'icon-cup'
-            }
-          },
-          {
-            path: 'test8',
-            component: demo,
-            meta: {
-              title: '面包屑导航',
-              icon: 'icon-cup'
+              title: '子集路由'
             }
           }
         ]
@@ -98,16 +40,14 @@ export default [
     component: Layout,
     redirect: '/test/test1',
     meta: {
-      title: '面包屑导航',
-      icon: 'icon-cup'
+      title: '测试布局'
     },
     children: [
       {
         path: 'test1',
         component: demo,
         meta: {
-          title: '面包屑导航',
-          icon: 'icon-cup'
+          title: '平级路由'
         }
       }
     ]
