@@ -2,12 +2,13 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-18 15:58:30
- * @LastEditTime: 2022-08-02 17:40:32
+ * @LastEditTime: 2022-08-03 14:27:52
  * @LastEditors: wsy
  */
-import { useUrlSearchParams } from '@vueuse/core'
-import consola from 'consola'
+import { useUrlSearchParams, useTitle } from '@vueuse/core'
 import { useKeepAliveOutsideStore } from '@/store/modules/keepAlive'
+import { useRouteOutsideStore } from '@/store/modules/router'
+import consola from 'consola'
 
 export async function urlParamsLogin() {
   let params = useUrlSearchParams('history')
@@ -21,7 +22,8 @@ export async function urlParamsLogin() {
     })
   }
 }
-export function keepAliveHelper(to, from) {
+
+export function keepAlive(to, from) {
   const cacheTypeClass = ['String', 'Array', 'Boolean']
   const noCacheTypeClass = ['String', 'Array']
   const keepAliveOutsideStore = useKeepAliveOutsideStore()
@@ -75,5 +77,20 @@ export function keepAliveHelper(to, from) {
   }
   function typeSource(type) {
     return Object.prototype.toString.call(type).slice(8, -1)
+  }
+}
+
+export function pageDirection(to, from) {
+  const routeStore = useRouteOutsideStore()
+  routeStore.routerDirection(to, from)
+}
+
+export function usePageTitle(to) {
+  const projectTitle = import.meta.env.VITE_APP_TITLE
+  const rawTitle = normalizeTitle(to.meta.title)
+  const title = useTitle()
+  title.value = rawTitle ? `${projectTitle} | ${rawTitle}` : projectTitle
+  function normalizeTitle(raw) {
+    return typeof raw === 'function' ? raw() : raw
   }
 }

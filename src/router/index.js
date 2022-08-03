@@ -2,19 +2,18 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-08 17:09:43
- * @LastEditTime: 2022-08-02 19:09:52
+ * @LastEditTime: 2022-08-03 14:17:26
  * @LastEditors: wsy
  */
 
 import { createRouter, createWebHashHistory } from 'vue-router'
 import screen from './modules'
 import { constantRoutes, lastRoute } from './system'
-import { keepAliveHelper } from './helper'
+import { pageDirection, keepAlive, usePageTitle } from './helper'
 import { useProgress } from '@/hooks/useProgress'
 import { useRouteOutsideStore } from '@/store/modules/router'
 import { useUserOutsideStore } from '@/store/modules/user'
 import { wrapperEnv } from '@/util/env'
-import { useTitle } from '@vueuse/core'
 import '@/style/scss/nprogress.scss'
 const isAuthority = wrapperEnv(import.meta.env.VITE_AUTHORITY)
 const { openNProgress, closeNProgress } = useProgress()
@@ -67,16 +66,10 @@ router.beforeEach(async (to, from, next) => {
 })
 
 router.afterEach((to, from) => {
-  const routeStore = useRouteOutsideStore()
-  const routerTitle = to.meta.title
-  const rawTitle = typeof routerTitle === 'function' ? routerTitle() : routerTitle
-  const title = useTitle()
-  title.value = rawTitle
-    ? `${import.meta.env.VITE_APP_TITLE} | ${rawTitle}`
-    : import.meta.env.VITE_APP_TITLE
+  usePageTitle(to)
   closeNProgress()
-  routeStore.routerDirection(to, from)
-  keepAliveHelper(to, from)
+  pageDirection(to, from)
+  keepAlive(to, from)
 })
 
 async function setupRouter(app) {
