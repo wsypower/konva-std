@@ -41,7 +41,7 @@
 - 🍧 error-gutters
 - 🍼 gitlens
 ## 🍩 目录结构
-```javascript
+```text
 template
 ├── build
 │   ├── scripts
