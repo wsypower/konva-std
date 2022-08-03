@@ -7,6 +7,8 @@
     "antfu.unocss",
     "antfu.iconify",
     "vue.volar",
-    "csstools.postcss"
+    "csstools.postcss",
+    "usernamehw.errorlens",
+    "IgorSbitnev.error-gutters"
   ]
 }

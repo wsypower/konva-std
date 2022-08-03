@@ -2,35 +2,60 @@
 
 ## 简介
 
-大屏项目的基础模板
+大屏项目的基础模板,模板不提供样式,仅仅提供逻辑和环境
+## 功能
+- 🐄 路由是否开启缓存
+- 🐓 路由转场动画
+- 🍿 是否开启登录校验
+- 🐅 url参数免登（第三方登入）
+- 🐡 title 自动切换
+- 🐠 header 标题自动切换
+- 🐥 unocss 原子化碎片
+- 🐺 iconify 图标选择
+- 🐗 element icon 全量图标
+- 🐴 components 组件自动导入
+- 🐝 组合式免引入
+- 🐝 eslint校验
+- 🐍 stylelint校验
 
 ## 技术栈
-- [node](http://nodejs.org/) 和 [git](https://git-scm.com/) -项目开发环境
-- [Vite](https://vitejs.dev/) - 熟悉 vite 特性
-- [Vue3](https://v3.vuejs.org/) - 熟悉 Vue@3 基础语法
-- [Pinia](https://pinia.vuejs.org/introduction.html#why-should-i-use-pinia) - 熟悉`Pinia`基本语法
-- [Es6+](http://es6.ruanyifeng.com/) - 熟悉 es6 基本语法
-- [Vue-Router-Next](https://next.router.vuejs.org/) - 熟悉 vue-router 基本使用
-- [Mock.js](https://github.com/nuysoft/Mock) - mockjs 基本语法
-- [unocss](https://github.com/nuysoft/Mock) - 原子化css库 unocss 基本语法
-
+- 🍋 [node](http://nodejs.org/) 和 [git](https://git-scm.com/) -项目开发环境
+- 🍟 [Vite](https://vitejs.dev/) - 熟悉 vite 特性
+- 🍅 [Vue3](https://v3.vuejs.org/) - 熟悉 Vue@3 基础语法
+- 🍆 [Pinia](https://pinia.vuejs.org/introduction.html#why-should-i-use-pinia) - 熟悉`Pinia`基本语法
+- 🌽 [Es6+](http://es6.ruanyifeng.com/) - 熟悉 es6 基本语法
+- 🍇 [Vue-Router-Next](https://next.router.vuejs.org/) - 熟悉 vue-router 基本使用
+- 🍒 [Mock.js](https://github.com/nuysoft/Mock) - mockjs 基本语法
+- 🍑 [unocss](https://github.com/nuysoft/Mock) - 原子化css库 unocss 基本语法
+- 🌶 [vueuse](https://vueuse.org/) - vue3的hook库
+  
 ## vscode 插件
+- 🍭 editorconfig
+- 🍬 dotenv
+- 🍿 prettier-vscode
+- 🍪 vscode-eslint
+- 🍺 unocss
+- 🍦 iconify
+- 🍰 volar
+- 🎂 errorlens
+- 🍧 error-gutters
+- 🍼 gitlens
 
 ## 安装使用
 
-- 获取项目代码
+获取项目代码
 
 ```bash
 git clone git@172.16.40.21:ZWGroup/basic/vue3-screen-template.git
 ```
 
-- 安装依赖
+🌈 安装依赖
 
 ```bash
 pnpm install
 ```
 
-- 运行
+🐥 运行
 
 ```bash
 pnpm run dev
@@ -38,21 +63,21 @@ pnpm run dev
 pnpm run serve
 ```
 
-- 打包
+🍁 打包
 
 ```bash
 pnpm run build
 ```
 
-- Git 提交
+🍄 Git 提交
 
 ```bash
 pnpm run cz
 ```
 
-## Git 规范
+## 🍣 Git 规范
 
-- 参考 [vue](https://github.com/vuejs/vue/blob/dev/.github/COMMIT_CONVENTION.md) 规范 ([Angular](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular))
+参考 [vue](https://github.com/vuejs/vue/blob/dev/.github/COMMIT_CONVENTION.md) 规范 ([Angular](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular))
 
   - `✨ feat` 增加新功能
   - `🐛 fix` 修复问题/BUG
@@ -65,6 +90,7 @@ pnpm run cz
   - `⏪️ revert` 回退
   - `🚀‍ build` 构建过程或辅助工具的变动
   - `👷 ci` CI 配置
+
 
 ## Git 提交流程
 ```bash
