@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-02-08 17:24:53
- * @LastEditTime: 2022-08-03 15:21:41
+ * @LastEditTime: 2022-08-03 16:03:33
  * @LastEditors: wsy
  */
 const demo = () => import('@/views/system/demo/index.vue')
@@ -20,8 +20,7 @@ export default [
         path: 'home',
         component: () => import('@/views/system/demo/container.vue'),
         meta: {
-          title: '首页',
-          icon: '测试首页'
+          title: '测试首页'
         },
         children: [
           {

@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-14 14:38:45
- * @LastEditTime: 2022-08-03 15:24:01
+ * @LastEditTime: 2022-08-03 16:11:03
  * @LastEditors: wsy
 -->
 <template>
@@ -10,14 +10,8 @@
 </template>
 
 <script setup>
-  const route = useRoute()
-  const title = route.meta.title
-  watch(
-    () => route,
-    () => {
-      console.info(123)
-    }
-  )
+  import { useUpdateTitle } from '@/hooks/routerHook'
+  const title = useUpdateTitle()
 </script>
 
 <style lang="scss" scoped></style>
