@@ -10,9 +10,10 @@
 - url参数免登（第三方登入）
 - title 自动切换
 - header 标题自动切换
+- Element-plus 改全局颜色配置
 - unocss 原子化碎片
 - iconify 图标选择
-- element icon 全量图标
+- Element icon 全量图标
 - components 组件自动导入
 - 组合式免引入
 - eslint校验
