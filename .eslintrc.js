@@ -23,7 +23,7 @@ module.exports = {
   parser: "vue-eslint-parser",
   parserOptions: {
     sourceType: "module",
-    ecmaVersion: 2020,
+    ecmaVersion: 2022,
     ecmaFeatures: {
       jsx: true,
     },
