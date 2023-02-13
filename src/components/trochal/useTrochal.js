@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-13 21:18:58
+ * @LastEditTime: 2023-02-13 22:24:16
  * @LastEditors: wsy
  */
 
@@ -80,13 +80,20 @@ class Trochal {
   drawInner() {
     this.drawInnerCircle()
     const sectorSize = this.data.length
-    const sectorAngle = Math.floor(360 / sectorSize)
-    for (let i = 0; i < this.data.length; i++) {
+    const supplementaryAngle = 70
+    const sectorAngle = Math.floor((supplementaryAngle * 2) / sectorSize)
+    for (let i = 0; i < sectorSize; i++) {
       const sector = this.createSector({
         angle: sectorAngle,
-        rotation: i * sectorAngle
+        rotation: i * sectorAngle - supplementaryAngle
+      })
+      const text = this.createText({
+        angle: sectorAngle,
+        rotation: i * sectorAngle + sectorAngle / 3 - supplementaryAngle,
+        value: this.data[i].name
       })
       this.layers.get('inner').add(sector)
+      this.layers.get('inner').add(text)
     }
   }
 
@@ -98,6 +105,7 @@ class Trochal {
     let layer = this.layers.get('inner')
     const circle = this.createCircle()
     layer.add(circle)
+    return circle
   }
 
   /**
@@ -111,6 +119,7 @@ class Trochal {
       rotation: 0
     })
     layer.add(sector)
+    return sector
   }
 
   /**
@@ -172,14 +181,31 @@ class Trochal {
    * @returns {Konva.Wedge} - the sector object.
    */
   createSector({ angle, rotation }) {
-    const { radius, fill, originX: x, originY: y } = this
+    const { radius, originX: x, originY: y } = this
     return new Konva.Wedge({
       x,
       y,
       radius,
       angle,
-      fill,
+      fill: 'blue',
+      stroke: 'red',
       rotation
+    })
+  }
+  createText({ angle, rotation, value }) {
+    const { originX: x, originY: y, radius } = this
+    return new Konva.Text({
+      x,
+      y,
+      text: value,
+      fontSize: 24,
+      align: 'center',
+      padding: 0,
+      fill: 'white',
+      strokeWidth: 3,
+      offsetX: -radius * 0.6,
+      rotation,
+      angle
     })
   }
 }
