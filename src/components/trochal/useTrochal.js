@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-14 19:33:18
+ * @LastEditTime: 2023-02-14 20:09:07
  * @LastEditors: wsy
  */
 
@@ -29,13 +29,13 @@ class Trochal {
    * The y-coordinate of the origin of the filter.
    * @type {number}
    */
-  originY = 550
+  originY = 1080 / 2
 
   /**
    * The radius of the circle that the filter is applied to.
    * @type {number}
    */
-  radius = 500
+  radius = 800
 
   /**
    * The color to fill the page with.
@@ -77,7 +77,7 @@ class Trochal {
    */
   innerSectorAngle = 10
 
-  startCurrent = 3
+  startCurrent = 2
 
   startCurrentAngle = 0
 
@@ -250,7 +250,7 @@ class Trochal {
     if (this.data[idx]) {
       const text = this.createText({
         angle,
-        rotation: rotation + angle / 3,
+        rotation: rotation + angle / 2.6,
         value: this.data[idx].name,
         name: `${id}-sector`,
         id: `${id}-text`,
@@ -340,7 +340,7 @@ class Trochal {
       padding: 0,
       fill: 'white',
       strokeWidth: 3,
-      offsetX: -radius * 0.6,
+      offsetX: -radius * 0.7,
       rotation,
       angle
     })
@@ -362,10 +362,10 @@ class Trochal {
     const rotation = layer.getRotation()
 
     let targetAngle = rotation - (wedgeRotation - this.startCurrentAngle + rotation)
-    if (targetAngle > 0) {
+    if (targetAngle >= 0) {
       targetAngle = targetAngle - 360
     }
-    if (targetAngle < -180) {
+    if (targetAngle <= -180) {
       targetAngle = targetAngle + 360
     }
     const tween = new Konva.Tween({
@@ -482,10 +482,10 @@ export default defineComponent({
           { name: '视联网', value: 10 },
           { name: '网络信息安全', value: 10 },
           { name: '企业应用与服务', value: 10 },
-          { name: '视频服务', value: 10 },
-          { name: '安全', value: 10 },
-          { name: '行业', value: 10 },
-          { name: '其他', value: 10 }
+          { name: '视频服务', value: 10 }
+          // { name: '安全', value: 10 },
+          // { name: '行业', value: 10 },
+          // { name: '其他', value: 10 }
         ]
       }
     }
