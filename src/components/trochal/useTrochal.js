@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-14 16:05:42
+ * @LastEditTime: 2023-02-14 18:50:12
  * @LastEditors: wsy
  */
 
@@ -23,13 +23,13 @@ class Trochal {
    * The x coordinate of the origin of the filter.
    * @type {number}
    */
-  originX = 250
+  originX = 550
 
   /**
    * The y-coordinate of the origin of the filter.
    * @type {number}
    */
-  originY = 300
+  originY = 550
 
   /**
    * The radius of the circle that the filter is applied to.
@@ -174,6 +174,10 @@ class Trochal {
     let layer = new Konva.Layer({
       x: this.originX,
       y: this.originY,
+      offset: {
+        x: this.originX,
+        y: this.originY
+      },
       name
     })
     this.layers.set(name, layer)
@@ -256,11 +260,11 @@ class Trochal {
     const layer = this.selectLayer('inner')
 
     const wedge = group.getChildren((node) => node.getClassName() === 'Wedge').at(0)
-    // const text = group.getChildren((node) => node.getClassName() === 'Text').at(0)
+    const text = group.getChildren((node) => node.getClassName() === 'Text').at(0)
 
     group.on('click', function () {
-      layer.fire('resetFill', { id: wedge.id() })
-      layer.fire('setActiveFill', { id: wedge.id() })
+      layer.fire('resetFill', { wedgeId: wedge.id(), textId: text.id() })
+      layer.fire('setActiveFill', { wedgeId: wedge.id(), textId: text.id() })
     })
   }
 
@@ -285,13 +289,22 @@ class Trochal {
       id,
       name
     })
-    layer.on('setActiveFill', ({ id }) => {
-      if (wedge.id() === id) {
+    layer.on('setActiveFill', ({ wedgeId }) => {
+      if (wedge.id() === wedgeId) {
         wedge.fill(this.innerWedgeActiveFill)
       }
+      // wedge.rotate(45)
+      const rotation = layer.getRotation()
+      const tween = new Konva.Tween({
+        node: layer,
+        duration: 1,
+        easing: Konva.Easings.EaseInOut,
+        rotation: rotation + 55
+      })
+      tween.play()
     })
-    layer.on('resetFill', ({ id }) => {
-      if (wedge.id() !== id) {
+    layer.on('resetFill', ({ wedgeId }) => {
+      if (wedge.id() !== wedgeId) {
         wedge.fill(this.innerWedgeFill)
       }
     })
@@ -307,7 +320,8 @@ class Trochal {
    */
   createText({ angle, rotation, value }) {
     const { originX: x, originY: y, radius } = this
-    return new Konva.Text({
+    const layer = this.selectLayer('inner')
+    const text = new Konva.Text({
       x,
       y,
       text: value,
@@ -320,6 +334,12 @@ class Trochal {
       rotation,
       angle
     })
+    layer.on('setActiveFill', ({ textId }) => {
+      if (text.id() === textId) {
+        // text.fill(this.innerWedgeActiveFill)
+      }
+    })
+    return text
   }
 
   normalizeData(multiple, remainder) {
