@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-14 20:09:07
+ * @LastEditTime: 2023-02-14 20:46:44
  * @LastEditors: wsy
  */
 
@@ -77,9 +77,19 @@ class Trochal {
    */
   innerSectorAngle = 10
 
+  /**
+   * Starts the current index at the given number.
+   * @param {number} startCurrent - the number to start the current index at.
+   * @returns None
+   */
   startCurrent = 2
 
+  /**
+   * The starting angle of the current animation.
+   */
   startCurrentAngle = 0
+
+  padding = 480
 
   data = []
 
@@ -98,6 +108,7 @@ class Trochal {
    * @returns None
    */
   draw() {
+    this.drawOuter()
     this.drawInner()
   }
 
@@ -128,7 +139,10 @@ class Trochal {
       })
     }
   }
-
+  drawOuter() {
+    this.drawOuterCircle()
+    // this.drawOuterSector()
+  }
   /**
    * Draws the inner circle of the filter.
    * @returns None
@@ -140,6 +154,14 @@ class Trochal {
     return circle
   }
 
+  drawOuterCircle() {
+    let layer = this.layers.get('outer')
+    const circle = this.createCircle({
+      radius: this.radius + this.padding
+    })
+    layer.add(circle)
+    return circle
+  }
   /**
    * Draws the inner sector of the wheel.
    * @returns None
@@ -156,6 +178,7 @@ class Trochal {
   selectLayer(name) {
     return this.layers.get(name)
   }
+
   /**
    * Creates a new Konva stage.
    * @param {string} container - the id of the container to create the stage in.
@@ -186,6 +209,7 @@ class Trochal {
     })
     this.layers.set(name, layer)
     this.stage.add(layer)
+    layer.zIndex(0)
     return layer
   }
 
@@ -206,7 +230,7 @@ class Trochal {
     stroke = this.stroke,
     strokeWidth = this.strokeWidth
   } = {}) {
-    return new Konva.Circle({
+    const circle = new Konva.Circle({
       x,
       y,
       radius,
@@ -214,6 +238,7 @@ class Trochal {
       stroke,
       strokeWidth
     })
+    return circle
   }
 
   /**
@@ -299,6 +324,7 @@ class Trochal {
       id,
       name
     })
+
     layer.on('setStartCurrent', ({ id }) => {
       if (wedge.getParent().id() === id) {
         wedge.fill(this.innerWedgeActiveFill)
