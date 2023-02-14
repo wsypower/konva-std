@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-14 19:00:44
+ * @LastEditTime: 2023-02-14 19:33:18
  * @LastEditors: wsy
  */
 
@@ -78,6 +78,8 @@ class Trochal {
   innerSectorAngle = 10
 
   startCurrent = 3
+
+  startCurrentAngle = 0
 
   data = []
 
@@ -300,21 +302,15 @@ class Trochal {
     layer.on('setStartCurrent', ({ id }) => {
       if (wedge.getParent().id() === id) {
         wedge.fill(this.innerWedgeActiveFill)
+        this.startCurrentAngle = wedge.rotation()
       }
     })
     layer.on('setActiveFill', ({ wedgeId }) => {
       if (wedge.id() === wedgeId) {
         wedge.fill(this.innerWedgeActiveFill)
+
+        this.innerAnimation({ wedge })
       }
-      // wedge.rotate(45)
-      const rotation = layer.getRotation()
-      const tween = new Konva.Tween({
-        node: layer,
-        duration: 1,
-        easing: Konva.Easings.EaseInOut,
-        rotation: rotation + 55
-      })
-      tween.play()
     })
     layer.on('resetFill', ({ wedgeId }) => {
       if (wedge.id() !== wedgeId) {
@@ -360,7 +356,27 @@ class Trochal {
     })
     return text
   }
+  innerAnimation({ wedge }) {
+    const layer = this.selectLayer('inner')
+    const wedgeRotation = wedge.getRotation()
+    const rotation = layer.getRotation()
 
+    let targetAngle = rotation - (wedgeRotation - this.startCurrentAngle + rotation)
+    if (targetAngle > 0) {
+      targetAngle = targetAngle - 360
+    }
+    if (targetAngle < -180) {
+      targetAngle = targetAngle + 360
+    }
+    const tween = new Konva.Tween({
+      node: layer,
+      duration: 1,
+      easing: Konva.Easings.EaseInOut,
+      rotation: targetAngle
+    })
+
+    tween.play()
+  }
   normalizeData(multiple, remainder) {
     const dataLength = this.data.length
 
