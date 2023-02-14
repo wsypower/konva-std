@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-14 11:10:26
+ * @LastEditTime: 2023-02-14 16:05:42
  * @LastEditors: wsy
  */
 
@@ -23,19 +23,20 @@ class Trochal {
    * The x coordinate of the origin of the filter.
    * @type {number}
    */
-  originX = 550
+  originX = 250
 
   /**
    * The y-coordinate of the origin of the filter.
    * @type {number}
    */
-  originY = 550
+  originY = 300
 
   /**
    * The radius of the circle that the filter is applied to.
    * @type {number}
    */
   radius = 500
+
   /**
    * The color to fill the page with.
    * @type {string}
@@ -43,10 +44,26 @@ class Trochal {
   fill = '#75A99D'
 
   /**
+   * The color of the inner wedge of the filter.
+   * @type {string}
+   */
+  innerWedgeFill = '#DADBDD'
+
+  /**
+   * The color of the inner wedge of the active fill.
+   */
+  innerWedgeActiveFill = '#BAC6DD'
+
+  /**
    * The stroke color of the filter.
    * @type {string}
    */
   stroke = 'black'
+
+  /**
+   * The color of the inner wedge stroke.
+   */
+  innerwedgeStroke = 'red'
 
   /**
    * The width of the stroke used to draw the border around the filter.
@@ -93,19 +110,18 @@ class Trochal {
     this.data = this.normalizeData(multiple, remainder)
 
     for (let i = 0; i < innerSectorSize; i++) {
-      const sector = this.createSector({
-        angle: this.innerSectorAngle,
-        rotation: i * this.innerSectorAngle - offsetAngle
+      const angle = this.innerSectorAngle
+      const rotation = i * this.innerSectorAngle - offsetAngle
+      const id = `${i}-inner`
+      const name = `${i}-inner-group`
+      const idx = i
+      this.createInnerGroup({
+        angle,
+        rotation,
+        id,
+        name,
+        idx
       })
-      this.selectLayer('inner').add(sector)
-      if (this.data[i]) {
-        const text = this.createText({
-          angle: this.innerSectorAngle,
-          rotation: i * this.innerSectorAngle + this.innerSectorAngle / 3 - offsetAngle,
-          value: this.data[i].name
-        })
-        this.selectLayer('inner').add(text)
-      }
     }
   }
 
@@ -126,7 +142,7 @@ class Trochal {
    */
   drawInnerSector() {
     let layer = this.layers.get('inner')
-    let sector = this.createSector({
+    let sector = this.createInnerSector({
       angle: 60,
       rotation: 0
     })
@@ -155,7 +171,11 @@ class Trochal {
    * @returns {Konva.Layer} - the layer object.
    */
   createLayer(name) {
-    let layer = new Konva.Layer()
+    let layer = new Konva.Layer({
+      x: this.originX,
+      y: this.originY,
+      name
+    })
     this.layers.set(name, layer)
     this.stage.add(layer)
     return layer
@@ -189,22 +209,93 @@ class Trochal {
   }
 
   /**
+   * Creates a new group with the given id and name.
+   * @param {string} id - the id of the group.
+   * @param {string} name - the name of the group.
+   * @returns {Konva.Group}
+   */
+  createGroup({ id, name }) {
+    const group = new Konva.Group({ id, name })
+    return group
+  }
+
+  /**
+   * Create a group that contains a sector and text.
+   * @param {number} angle - The angle of the sector.
+   * @param {number} rotation - The rotation of the sector.
+   * @param {string} id - The id of the group.
+   * @param {string} name - The name of the group.
+   * @param {number} idx - The index of the group.
+   * @returns A group that contains a sector and text.
+   */
+  createInnerGroup({ angle, rotation, id, name, idx }) {
+    const group = this.createGroup({ id, name })
+    const sector = this.createInnerSector({
+      angle,
+      rotation,
+      name: `${id}-sector`,
+      id: `${id}-sector`
+    })
+    group.add(sector)
+    if (this.data[idx]) {
+      const text = this.createText({
+        angle,
+        rotation: rotation + angle / 3,
+        value: this.data[idx].name,
+        name: `${id}-sector`,
+        id: `${id}-text`
+      })
+      group.add(text)
+    }
+    this.selectLayer('inner').add(group)
+    this.innerGroupAddEventer(group)
+    return group
+  }
+
+  innerGroupAddEventer(group) {
+    const layer = this.selectLayer('inner')
+
+    const wedge = group.getChildren((node) => node.getClassName() === 'Wedge').at(0)
+    // const text = group.getChildren((node) => node.getClassName() === 'Text').at(0)
+
+    group.on('click', function () {
+      layer.fire('resetFill', { id: wedge.id() })
+      layer.fire('setActiveFill', { id: wedge.id() })
+    })
+  }
+
+  /**
    * Creates a sector object for the given sector angle and rotation.
    * @param {number} angle - the angle of the sector.
    * @param {number} rotation - the rotation of the sector.
    * @returns {Konva.Wedge} - the sector object.
    */
-  createSector({ angle, rotation }) {
+  createInnerSector({ angle, rotation, id, name }) {
     const { radius, originX: x, originY: y } = this
-    return new Konva.Wedge({
+    const layer = this.selectLayer('inner')
+    const wedge = new Konva.Wedge({
       x,
       y,
       radius,
       angle,
-      fill: 'blue',
-      stroke: 'red',
-      rotation
+      fill: this.innerWedgeFill,
+      stroke: this.innerwedgeStroke,
+      rotation,
+      // listening: true,
+      id,
+      name
     })
+    layer.on('setActiveFill', ({ id }) => {
+      if (wedge.id() === id) {
+        wedge.fill(this.innerWedgeActiveFill)
+      }
+    })
+    layer.on('resetFill', ({ id }) => {
+      if (wedge.id() !== id) {
+        wedge.fill(this.innerWedgeFill)
+      }
+    })
+    return wedge
   }
 
   /**
@@ -230,6 +321,7 @@ class Trochal {
       angle
     })
   }
+
   normalizeData(multiple, remainder) {
     const dataLength = this.data.length
 
@@ -248,12 +340,20 @@ class Trochal {
       }, [])
     )
   }
+
+  /**
+   * Inserts an array of items into the middle of an array.
+   * @param {Array} arr - the array to insert the items into.
+   * @param {Array} items - the items to insert into the array.
+   * @returns None
+   */
   insertArr(arr, items) {
     const middle = Math.floor(arr.length / 2)
     arr.splice(middle, 0, ...items)
     return arr
   }
 }
+
 function chunk(arr, size) {
   const chunked = []
   for (let element of arr) {
@@ -266,6 +366,7 @@ function chunk(arr, size) {
   }
   return chunked
 }
+
 /**
  * Extends the target object with the properties of the origin object.
  * @param {object} origin - the object to copy the properties from
