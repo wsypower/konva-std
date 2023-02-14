@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-14 18:50:12
+ * @LastEditTime: 2023-02-14 19:00:44
  * @LastEditors: wsy
  */
 
@@ -76,6 +76,8 @@ class Trochal {
    * @type {number}
    */
   innerSectorAngle = 10
+
+  startCurrent = 3
 
   data = []
 
@@ -234,11 +236,13 @@ class Trochal {
    */
   createInnerGroup({ angle, rotation, id, name, idx }) {
     const group = this.createGroup({ id, name })
+    const layer = this.selectLayer('inner')
     const sector = this.createInnerSector({
       angle,
       rotation,
       name: `${id}-sector`,
-      id: `${id}-sector`
+      id: `${id}-sector`,
+      idx
     })
     group.add(sector)
     if (this.data[idx]) {
@@ -247,12 +251,16 @@ class Trochal {
         rotation: rotation + angle / 3,
         value: this.data[idx].name,
         name: `${id}-sector`,
-        id: `${id}-text`
+        id: `${id}-text`,
+        idx
       })
       group.add(text)
     }
     this.selectLayer('inner').add(group)
     this.innerGroupAddEventer(group)
+    if (idx === this.startCurrent) {
+      layer.fire('setStartCurrent', { id: group.id() })
+    }
     return group
   }
 
@@ -289,6 +297,11 @@ class Trochal {
       id,
       name
     })
+    layer.on('setStartCurrent', ({ id }) => {
+      if (wedge.getParent().id() === id) {
+        wedge.fill(this.innerWedgeActiveFill)
+      }
+    })
     layer.on('setActiveFill', ({ wedgeId }) => {
       if (wedge.id() === wedgeId) {
         wedge.fill(this.innerWedgeActiveFill)
@@ -308,6 +321,7 @@ class Trochal {
         wedge.fill(this.innerWedgeFill)
       }
     })
+
     return wedge
   }
 
@@ -333,6 +347,11 @@ class Trochal {
       offsetX: -radius * 0.6,
       rotation,
       angle
+    })
+    layer.on('setStartCurrent', ({ id }) => {
+      if (text.getParent().id() === id) {
+        // text.fill(this.innerWedgeActiveFill)
+      }
     })
     layer.on('setActiveFill', ({ textId }) => {
       if (text.id() === textId) {
