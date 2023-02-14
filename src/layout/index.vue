@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-11 15:30:05
- * @LastEditTime: 2023-02-13 19:19:49
+ * @LastEditTime: 2023-02-14 08:28:21
  * @LastEditors: wsy
 -->
 <template>
@@ -12,5 +12,5 @@
 </template>
 
 <script setup>
-  import trochal from '@/components/trochal/trochal.js'
+  import trochal from '@/components/trochal/useTrochal.js'
 </script>

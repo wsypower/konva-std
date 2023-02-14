@@ -2,11 +2,12 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-13 22:24:16
+ * @LastEditTime: 2023-02-14 11:10:26
  * @LastEditors: wsy
  */
 
 import Konva from 'konva'
+import { ref, onMounted, h, defineComponent } from 'vue'
 
 class Trochal {
   width = 0
@@ -53,6 +54,12 @@ class Trochal {
    */
   strokeWidth = 4
 
+  /**
+   * The angle of the inner sector of the circle.
+   * @type {number}
+   */
+  innerSectorAngle = 10
+
   data = []
 
   /**
@@ -79,21 +86,26 @@ class Trochal {
    */
   drawInner() {
     this.drawInnerCircle()
-    const sectorSize = this.data.length
-    const supplementaryAngle = 70
-    const sectorAngle = Math.floor((supplementaryAngle * 2) / sectorSize)
-    for (let i = 0; i < sectorSize; i++) {
+    const innerSectorSize = Math.floor(360 / this.innerSectorAngle)
+    const offsetAngle = (this.innerSectorAngle * this.data.length) / 2
+    const remainder = innerSectorSize % this.data.length
+    const multiple = Math.floor(innerSectorSize / this.data.length)
+    this.data = this.normalizeData(multiple, remainder)
+
+    for (let i = 0; i < innerSectorSize; i++) {
       const sector = this.createSector({
-        angle: sectorAngle,
-        rotation: i * sectorAngle - supplementaryAngle
+        angle: this.innerSectorAngle,
+        rotation: i * this.innerSectorAngle - offsetAngle
       })
-      const text = this.createText({
-        angle: sectorAngle,
-        rotation: i * sectorAngle + sectorAngle / 3 - supplementaryAngle,
-        value: this.data[i].name
-      })
-      this.layers.get('inner').add(sector)
-      this.layers.get('inner').add(text)
+      this.selectLayer('inner').add(sector)
+      if (this.data[i]) {
+        const text = this.createText({
+          angle: this.innerSectorAngle,
+          rotation: i * this.innerSectorAngle + this.innerSectorAngle / 3 - offsetAngle,
+          value: this.data[i].name
+        })
+        this.selectLayer('inner').add(text)
+      }
     }
   }
 
@@ -121,7 +133,9 @@ class Trochal {
     layer.add(sector)
     return sector
   }
-
+  selectLayer(name) {
+    return this.layers.get(name)
+  }
   /**
    * Creates a new Konva stage.
    * @param {string} container - the id of the container to create the stage in.
@@ -192,6 +206,14 @@ class Trochal {
       rotation
     })
   }
+
+  /**
+   * Creates a text object for the given parameters.
+   * @param {number} angle - the angle of the text object.
+   * @param {number} rotation - the rotation of the text object.
+   * @param {string} value - the value of the text object.
+   * @returns {Konva.Text} - the text object.
+   */
   createText({ angle, rotation, value }) {
     const { originX: x, originY: y, radius } = this
     return new Konva.Text({
@@ -208,8 +230,42 @@ class Trochal {
       angle
     })
   }
-}
+  normalizeData(multiple, remainder) {
+    const dataLength = this.data.length
 
+    const arr = Array.from({ length: (multiple - 1) * dataLength })
+      .map((item, index) => this.data[index % dataLength])
+      .concat(Array.from({ length: remainder }))
+
+    const chunks = chunk(arr, dataLength)
+    if (remainder) {
+      const remainderArr = chunks.pop()
+      this.insertArr(chunks[Math.floor(chunks.length / 2)], remainderArr)
+    }
+    return this.data.concat(
+      chunks.reduce((acc, chunk) => {
+        return acc.concat(chunk)
+      }, [])
+    )
+  }
+  insertArr(arr, items) {
+    const middle = Math.floor(arr.length / 2)
+    arr.splice(middle, 0, ...items)
+    return arr
+  }
+}
+function chunk(arr, size) {
+  const chunked = []
+  for (let element of arr) {
+    const last = chunked[chunked.length - 1]
+    if (!last || last.length === size) {
+      chunked.push([element])
+    } else {
+      last.push(element)
+    }
+  }
+  return chunked
+}
 /**
  * Extends the target object with the properties of the origin object.
  * @param {object} origin - the object to copy the properties from
@@ -243,4 +299,51 @@ function useTrochal(container, options) {
   return trochal
 }
 
-export default useTrochal
+export default defineComponent({
+  name: 'Trochal',
+  props: {
+    width: {
+      type: Number,
+      default() {
+        return 1920
+      }
+    },
+    height: {
+      type: Number,
+      default() {
+        return 1080
+      }
+    },
+    data: {
+      type: Array,
+      default() {
+        return [
+          { name: '云网能力', value: 10 },
+          { name: '云服务', value: 10 },
+          { name: '大数据', value: 10 },
+          { name: '人工智能', value: 10 },
+          { name: '物联网', value: 10 },
+          { name: '视联网', value: 10 },
+          { name: '网络信息安全', value: 10 },
+          { name: '企业应用与服务', value: 10 },
+          { name: '视频服务', value: 10 },
+          { name: '安全', value: 10 },
+          { name: '行业', value: 10 },
+          { name: '其他', value: 10 }
+        ]
+      }
+    }
+  },
+  setup(props) {
+    const container = ref(null)
+    useTrochal(container, props)
+    return () =>
+      h('div', {
+        style: {
+          width: `${props.width}px`,
+          height: `${props.height}px`
+        },
+        ref: container
+      })
+  }
+})
