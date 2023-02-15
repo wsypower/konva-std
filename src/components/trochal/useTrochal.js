@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-15 21:07:01
+ * @LastEditTime: 2023-02-15 22:58:40
  * @LastEditors: wsy
  */
 
@@ -166,7 +166,7 @@ class Trochal {
     for (let i = 0; i < rawData.length; i++) {
       const outer = rawData[i]
       const children = outer.value
-      const currentAngle = this.outerSectorAngleChildren * children.length + 1.2
+      const currentAngle = this.outerSectorAngleChildren * children.length + 1.5
       outer.angle = currentAngle
       outer.totalAngle = i > 0 ? rawData[i - 1].totalAngle + rawData[i - 1].angle : 0
     }
