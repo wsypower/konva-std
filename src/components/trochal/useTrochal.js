@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-14 20:46:44
+ * @LastEditTime: 2023-02-15 10:57:19
  * @LastEditors: wsy
  */
 
@@ -77,6 +77,9 @@ class Trochal {
    */
   innerSectorAngle = 10
 
+  outerSectorAngle = 30
+
+  outerSectorAngleChildren = 4
   /**
    * Starts the current index at the given number.
    * @param {number} startCurrent - the number to start the current index at.
@@ -93,6 +96,7 @@ class Trochal {
 
   data = []
 
+  rawData = []
   /**
    * Initializes the stage and layers for the filter.
    * @param {HTMLElement} container - the container for the filter.
@@ -108,8 +112,8 @@ class Trochal {
    * @returns None
    */
   draw() {
-    this.drawOuter()
     this.drawInner()
+    this.drawOuter()
   }
 
   /**
@@ -122,12 +126,14 @@ class Trochal {
     const offsetAngle = (this.innerSectorAngle * this.data.length) / 2
     const remainder = innerSectorSize % this.data.length
     const multiple = Math.floor(innerSectorSize / this.data.length)
+
+    this.rawData = this.data
     this.data = this.normalizeData(multiple, remainder)
 
     for (let i = 0; i < innerSectorSize; i++) {
       const angle = this.innerSectorAngle
-      const rotation = i * this.innerSectorAngle - offsetAngle
-      const id = `${i}-inner`
+      const rotation = i * angle - offsetAngle
+      const id = `${i}-inner-group`
       const name = `${i}-inner-group`
       const idx = i
       this.createInnerGroup({
@@ -141,8 +147,34 @@ class Trochal {
   }
   drawOuter() {
     this.drawOuterCircle()
-    // this.drawOuterSector()
+    const rawData = toRaw(this.rawData)
+
+    // pre iterate to get the total angle
+    for (let i = 0; i < rawData.length; i++) {
+      const outer = rawData[i]
+      const children = outer.value
+      const currentAngle = this.outerSectorAngleChildren * children.length
+      outer.angle = currentAngle
+      outer.totalAngle = i > 0 ? rawData[i - 1].totalAngle + rawData[i - 1].angle : 0
+    }
+    // const offset = rawData[this.startCurrent].totalAngle
+
+    // Calculate the total angle of the outer circle
+    for (let i = 0; i < rawData.length; i++) {
+      const outer = rawData[i]
+      const id = `${i}-outer-group`
+      const name = `${i}-outer-group`
+      const idx = i
+      this.createOuterGroup({
+        angle: outer.angle,
+        rotation: outer.totalAngle,
+        id,
+        name,
+        idx
+      })
+    }
   }
+
   /**
    * Draws the inner circle of the filter.
    * @returns None
@@ -162,19 +194,7 @@ class Trochal {
     layer.add(circle)
     return circle
   }
-  /**
-   * Draws the inner sector of the wheel.
-   * @returns None
-   */
-  drawInnerSector() {
-    let layer = this.layers.get('inner')
-    let sector = this.createInnerSector({
-      angle: 60,
-      rotation: 0
-    })
-    layer.add(sector)
-    return sector
-  }
+
   selectLayer(name) {
     return this.layers.get(name)
   }
@@ -283,12 +303,39 @@ class Trochal {
       })
       group.add(text)
     }
-    this.selectLayer('inner').add(group)
+    layer.add(group)
     this.innerGroupAddEventer(group)
     if (idx === this.startCurrent) {
       layer.fire('setStartCurrent', { id: group.id() })
     }
     return group
+  }
+
+  createOuterGroup({ angle, rotation, id, name, idx }) {
+    const group = this.createGroup({ id, name })
+    const layer = this.selectLayer('outer')
+    const sector = this.createOuterSector({
+      angle,
+      rotation,
+      name: `${id}-sector`,
+      id: `${id}-sector`,
+      idx
+    })
+    group.add(sector)
+    if (this.rawData[idx]) {
+      const text = this.createText({
+        angle,
+        rotation: rotation + angle / 2.6,
+        value: this.rawData[idx].name,
+        offsetX: -(this.radius + this.padding) * 0.8,
+        name: `${id}-sector`,
+        id: `${id}-text`,
+        idx
+      })
+      group.add(text)
+    }
+    layer.add(group)
+    return { group, offset: sector.getAngle() }
   }
 
   innerGroupAddEventer(group) {
@@ -320,7 +367,6 @@ class Trochal {
       fill: this.innerWedgeFill,
       stroke: this.innerwedgeStroke,
       rotation,
-      // listening: true,
       id,
       name
     })
@@ -347,6 +393,23 @@ class Trochal {
     return wedge
   }
 
+  createOuterSector({ angle, rotation, id, name }) {
+    const { radius, originX: x, originY: y } = this
+    // const layer = this.selectLayer('outer')
+    const wedge = new Konva.Wedge({
+      x,
+      y,
+      radius: radius + this.padding,
+      angle,
+      fill: this.innerWedgeFill,
+      stroke: this.innerwedgeStroke,
+      rotation,
+      id,
+      name
+    })
+    return wedge
+  }
+
   /**
    * Creates a text object for the given parameters.
    * @param {number} angle - the angle of the text object.
@@ -354,7 +417,7 @@ class Trochal {
    * @param {string} value - the value of the text object.
    * @returns {Konva.Text} - the text object.
    */
-  createText({ angle, rotation, value }) {
+  createText({ angle, rotation, value, offsetX }) {
     const { originX: x, originY: y, radius } = this
     const layer = this.selectLayer('inner')
     const text = new Konva.Text({
@@ -366,7 +429,7 @@ class Trochal {
       padding: 0,
       fill: 'white',
       strokeWidth: 3,
-      offsetX: -radius * 0.7,
+      offsetX: offsetX ?? -radius * 0.7,
       rotation,
       angle
     })
@@ -500,15 +563,113 @@ export default defineComponent({
       type: Array,
       default() {
         return [
-          { name: '云网能力', value: 10 },
-          { name: '云服务', value: 10 },
-          { name: '大数据', value: 10 },
-          { name: '人工智能', value: 10 },
-          { name: '物联网', value: 10 },
-          { name: '视联网', value: 10 },
-          { name: '网络信息安全', value: 10 },
-          { name: '企业应用与服务', value: 10 },
-          { name: '视频服务', value: 10 }
+          {
+            name: '云网能力',
+            value: [
+              { name: '云计算', value: 10 },
+              { name: '云存储', value: 10 },
+              { name: '大数据', value: 10 },
+              { name: '人工智能', value: 10 },
+              { name: '物联网', value: 10 },
+              { name: '视联网', value: 10 },
+              { name: '网络信息安全', value: 10 },
+              { name: '企业应用与服务', value: 10 }
+            ]
+          },
+          {
+            name: '云服务',
+            value: [
+              { name: '大数据', value: 10 },
+              { name: '人工智能', value: 10 },
+              { name: '物联网', value: 10 },
+              { name: '视联网', value: 10 },
+              { name: '网络信息安全', value: 10 },
+              { name: '企业应用与服务', value: 10 }
+            ]
+          },
+          {
+            name: '大数据',
+            value: [
+              { name: '云计算-1', value: 10 },
+              { name: '云存储-1', value: 10 },
+              { name: '云安全-1', value: 10 },
+              { name: '云服务-1', value: 10 },
+              { name: '大数据-1', value: 10 },
+              { name: '人工智能-1', value: 10 },
+              { name: '物联网-1', value: 10 },
+              { name: '视联网-1', value: 10 },
+              { name: '网络信息安全-1', value: 10 },
+              { name: '企业应用与服务-1', value: 10 },
+              { name: '云计算-1', value: 10 },
+              { name: '云存储-1', value: 10 },
+              { name: '云安全-1', value: 10 },
+              { name: '云服务-1', value: 10 },
+              { name: '大数据-1', value: 10 },
+              { name: '云服务-1', value: 10 },
+              { name: '大数据-1', value: 10 }
+            ]
+          },
+          {
+            name: '人工智能',
+            value: [
+              { name: '云存储', value: 10 },
+              { name: '大数据', value: 10 }
+            ]
+          },
+          {
+            name: '物联网',
+            value: [
+              { name: '云存储', value: 10 },
+              { name: '大数据', value: 10 }
+            ]
+          },
+          {
+            name: '视联网',
+            value: [
+              { name: '云存储', value: 10 },
+              { name: '大数据', value: 10 }
+            ]
+          },
+          {
+            name: '网络信息安全',
+            value: [
+              { name: '云计算', value: 10 },
+              { name: '云存储', value: 10 },
+              { name: '云安全', value: 10 },
+              { name: '云服务', value: 10 },
+              { name: '网络信息安全', value: 10 },
+              { name: '企业应用与服务', value: 10 }
+            ]
+          },
+          {
+            name: '企业应用与服务',
+            value: [
+              { name: '云计算', value: 10 },
+              { name: '云存储', value: 10 },
+              { name: '云服务', value: 10 },
+              { name: '大数据', value: 10 },
+              { name: '人工智能', value: 10 },
+              { name: '物联网', value: 10 },
+              { name: '视联网', value: 10 },
+              { name: '网络信息安全', value: 10 },
+              { name: '企业应用与服务', value: 10 }
+            ]
+          },
+          {
+            name: '视频服务',
+            value: [
+              { name: '云计算', value: 10 },
+              { name: '云存储', value: 10 },
+              { name: '云安全', value: 10 },
+              { name: '云服务', value: 10 },
+              { name: '大数据', value: 10 },
+              { name: '人工智能', value: 10 },
+              { name: '物联网', value: 10 },
+              { name: '视联网', value: 10 },
+              { name: '网络信息安全', value: 10 },
+              { name: '企业应用与服务', value: 10 }
+            ]
+          }
           // { name: '安全', value: 10 },
           // { name: '行业', value: 10 },
           // { name: '其他', value: 10 }
