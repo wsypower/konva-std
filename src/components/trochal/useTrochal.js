@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-15 12:26:27
+ * @LastEditTime: 2023-02-15 15:38:30
  * @LastEditors: wsy
  */
 
@@ -159,12 +159,11 @@ class Trochal {
     }
     const offset = rawData[this.startCurrent].totalAngle
 
-    const innerStartSectorRotation = this.selectLayer('inner')
-      .getChildren((node) => node.name() === `${this.startCurrent}-inner-group`)
-      .at(0)
-      .getChildren((node) => node.name() === `${this.startCurrent}-inner-group-sector`)
-      .at(0)
-      .getRotation()
+    const innerStartSectorRotation = this.searchWedge(
+      'inner',
+      `${this.startCurrent}-inner-group`,
+      `${this.startCurrent}-inner-group-sector`
+    ).getRotation()
 
     // Calculate the total angle of the outer circle
     for (let i = 0; i < rawData.length; i++) {
@@ -237,6 +236,7 @@ class Trochal {
     this.layers.set(name, layer)
     this.stage.add(layer)
     layer.zIndex(0)
+
     return layer
   }
 
@@ -387,8 +387,8 @@ class Trochal {
     layer.on('setActiveFill', ({ wedgeId }) => {
       if (wedge.id() === wedgeId) {
         wedge.fill(this.innerWedgeActiveFill)
-
         this.innerAnimation({ wedge })
+        this.outerAnimation({ wedge })
       }
     })
     layer.on('resetFill', ({ wedgeId }) => {
@@ -402,7 +402,6 @@ class Trochal {
 
   createOuterSector({ angle, rotation, id, name }) {
     const { radius, originX: x, originY: y } = this
-    // const layer = this.selectLayer('outer')
     const wedge = new Konva.Wedge({
       x,
       y,
@@ -414,6 +413,7 @@ class Trochal {
       id,
       name
     })
+
     return wedge
   }
 
@@ -473,6 +473,36 @@ class Trochal {
 
     tween.play()
   }
+
+  outerAnimation({ wedge }) {
+    const layer = this.selectLayer('outer')
+    const innerWedgeName = wedge.name()
+    const outerGroupName = wedge.getParent().name().replace('inner', 'outer')
+    const outerWedgeName = innerWedgeName.replace('inner', 'outer')
+    const outerWedge = this.searchWedge('outer', outerGroupName, outerWedgeName)
+
+    const outerAngle = outerWedge.getRotation()
+    const rotation = layer.getRotation()
+
+    let targetAngle = rotation - (outerAngle - this.startCurrentAngle + rotation)
+
+    if (targetAngle >= 0) {
+      targetAngle = targetAngle - 360
+    }
+    if (targetAngle <= -180) {
+      targetAngle = targetAngle + 360
+    }
+
+    const tween = new Konva.Tween({
+      node: layer,
+      duration: 1,
+      easing: Konva.Easings.EaseInOut,
+      rotation: targetAngle
+    })
+
+    tween.play()
+  }
+
   normalizeData(multiple, remainder) {
     const dataLength = this.data.length
 
@@ -502,6 +532,15 @@ class Trochal {
     const middle = Math.floor(arr.length / 2)
     arr.splice(middle, 0, ...items)
     return arr
+  }
+
+  searchWedge(layerName, groupName, wedgeName) {
+    let layer = this.selectLayer(layerName)
+    return layer
+      .getChildren((node) => node.name() === groupName)
+      .at(0)
+      .getChildren((node) => node.name() === wedgeName)
+      .at(0)
   }
 }
 
