@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-15 10:57:19
+ * @LastEditTime: 2023-02-15 12:26:27
  * @LastEditors: wsy
  */
 
@@ -157,7 +157,14 @@ class Trochal {
       outer.angle = currentAngle
       outer.totalAngle = i > 0 ? rawData[i - 1].totalAngle + rawData[i - 1].angle : 0
     }
-    // const offset = rawData[this.startCurrent].totalAngle
+    const offset = rawData[this.startCurrent].totalAngle
+
+    const innerStartSectorRotation = this.selectLayer('inner')
+      .getChildren((node) => node.name() === `${this.startCurrent}-inner-group`)
+      .at(0)
+      .getChildren((node) => node.name() === `${this.startCurrent}-inner-group-sector`)
+      .at(0)
+      .getRotation()
 
     // Calculate the total angle of the outer circle
     for (let i = 0; i < rawData.length; i++) {
@@ -167,7 +174,7 @@ class Trochal {
       const idx = i
       this.createOuterGroup({
         angle: outer.angle,
-        rotation: outer.totalAngle,
+        rotation: outer.totalAngle - offset + innerStartSectorRotation,
         id,
         name,
         idx
