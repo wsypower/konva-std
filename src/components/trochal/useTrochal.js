@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-15 16:36:17
+ * @LastEditTime: 2023-02-15 21:01:59
  * @LastEditors: wsy
  */
 
@@ -35,6 +35,7 @@ class Trochal {
    * The radius of the circle that the filter is applied to.
    * @type {number}
    */
+  // TODO 800
   radius = 800
 
   /**
@@ -87,7 +88,7 @@ class Trochal {
    * The number of children in the outer sector.
    * @returns {number} - the number of children in the outer sector.
    */
-  outerSectorAngleChildren = 4
+  outerSectorAngleChildren = 2.3
   /**
    * Starts the current index at the given number.
    * @param {number} startCurrent - the number to start the current index at.
@@ -166,7 +167,7 @@ class Trochal {
     for (let i = 0; i < rawData.length; i++) {
       const outer = rawData[i]
       const children = outer.value
-      const currentAngle = this.outerSectorAngleChildren * children.length
+      const currentAngle = this.outerSectorAngleChildren * children.length + 1.2
       outer.angle = currentAngle
       outer.totalAngle = i > 0 ? rawData[i - 1].totalAngle + rawData[i - 1].angle : 0
     }
@@ -257,6 +258,7 @@ class Trochal {
     })
     this.layers.set(name, layer)
     this.stage.add(layer)
+    // TODO: remove this line
     layer.zIndex(0)
 
     return layer
@@ -323,12 +325,10 @@ class Trochal {
     group.add(sector)
     if (this.data[idx]) {
       const text = this.createText({
-        angle,
         rotation: rotation + angle / 2.6,
         value: this.data[idx].name,
         name: `${id}-sector`,
-        id: `${id}-text`,
-        idx
+        id: `${id}-text`
       })
       group.add(text)
     }
@@ -353,24 +353,29 @@ class Trochal {
     const group = this.createGroup({ id, name })
     const layer = this.selectLayer('outer')
     const sector = this.createOuterSector({
-      angle,
-      rotation,
+      angle: angle,
+      rotation: rotation,
       name: `${id}-sector`,
       id: `${id}-sector`,
       idx
     })
     group.add(sector)
     if (this.rawData[idx]) {
-      const text = this.createText({
-        angle,
-        rotation: rotation + angle / 2.6,
-        value: this.rawData[idx].name,
-        offsetX: -(this.radius + this.padding) * 0.8,
-        name: `${id}-sector`,
-        id: `${id}-text`,
-        idx
-      })
-      group.add(text)
+      const children = this.rawData[idx].value
+      for (let i = 0; i < children.length; i++) {
+        const textRotaion = this.outerSectorAngleChildren * i + rotation
+        const text = this.createOuterText({
+          rotation: textRotaion,
+          value: children[i].name,
+          offsetX: -this.padding - this.radius * 0.7,
+          offsetY: -22,
+          fontSize: 18,
+          name: `${id}-sector`,
+          id: `${id}-text`,
+          idx
+        })
+        group.add(text)
+      }
     }
     layer.add(group)
     return { group, offset: sector.getAngle() }
@@ -468,7 +473,7 @@ class Trochal {
    * @param {string} value - the value of the text object.
    * @returns {Konva.Text} - the text object.
    */
-  createText({ angle, rotation, value, offsetX }) {
+  createText({ rotation, value, name, id }) {
     const { originX: x, originY: y, radius } = this
     const layer = this.selectLayer('inner')
     const text = new Konva.Text({
@@ -476,13 +481,50 @@ class Trochal {
       y,
       text: value,
       fontSize: 24,
-      align: 'center',
       padding: 0,
       fill: 'white',
       strokeWidth: 3,
-      offsetX: offsetX ?? -radius * 0.7,
+      height: this.outerSectorAngleChildren,
+      offsetX: -radius * 0.7,
       rotation,
-      angle
+      name,
+      id
+    })
+    layer.on('setStartCurrent', ({ id }) => {
+      if (text.getParent().id() === id) {
+      }
+    })
+    layer.on('setActiveFill', ({ textId }) => {
+      if (text.id() === textId) {
+      }
+    })
+    return text
+  }
+
+  /**
+   * Creates a text object for the given parameters.
+   * @param {number} angle - the angle of the text object.
+   * @param {number} rotation - the rotation of the text object.
+   * @param {string} value - the value of the text object.
+   * @returns {Konva.Text} - the text object.
+   */
+  createOuterText({ rotation, value, offsetX, offsetY, fontSize }) {
+    const { originX: x, originY: y } = this
+    const layer = this.selectLayer('inner')
+    const text = new Konva.Text({
+      x,
+      y,
+      text: value,
+      fontSize,
+      padding: 0,
+      fill: 'white',
+      strokeWidth: 3,
+      height: this.outerSectorAngleChildren,
+      align: 'center',
+      verticalAlign: 'center',
+      offsetX,
+      offsetY,
+      rotation
     })
     layer.on('setStartCurrent', ({ id }) => {
       if (text.getParent().id() === id) {
