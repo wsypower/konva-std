@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-15 16:08:22
+ * @LastEditTime: 2023-02-15 16:36:17
  * @LastEditors: wsy
  */
 
@@ -77,8 +77,16 @@ class Trochal {
    */
   innerSectorAngle = 10
 
+  /**
+   * The angle of the outer sector of the circle.
+   * @type {number}
+   */
   outerSectorAngle = 30
 
+  /**
+   * The number of children in the outer sector.
+   * @returns {number} - the number of children in the outer sector.
+   */
   outerSectorAngleChildren = 4
   /**
    * Starts the current index at the given number.
@@ -145,6 +153,11 @@ class Trochal {
       })
     }
   }
+
+  /**
+   * Draws the outer group of the pie chart.
+   * @returns None
+   */
   drawOuter() {
     this.drawOuterCircle()
     const rawData = toRaw(this.rawData)
@@ -192,6 +205,10 @@ class Trochal {
     return circle
   }
 
+  /**
+   * Draws the outer circle of the filter.
+   * @returns None
+   */
   drawOuterCircle() {
     let layer = this.layers.get('outer')
     const circle = this.createCircle({
@@ -201,6 +218,11 @@ class Trochal {
     return circle
   }
 
+  /**
+   * Selects the layer with the given name.
+   * @param {string} name - the name of the layer to select
+   * @returns {Layer} the layer with the given name
+   */
   selectLayer(name) {
     return this.layers.get(name)
   }
@@ -318,6 +340,15 @@ class Trochal {
     return group
   }
 
+  /**
+   * Create a group that contains the outer sector and the text.
+   * @param {number} angle - The angle of the outer sector.
+   * @param {number} rotation - The rotation of the outer sector.
+   * @param {string} id - The id of the outer sector.
+   * @param {string} name - The name of the outer sector.
+   * @param {number} idx - The index of the outer sector.
+   * @returns A group containing the outer sector and the text.
+   */
   createOuterGroup({ angle, rotation, id, name, idx }) {
     const group = this.createGroup({ id, name })
     const layer = this.selectLayer('outer')
@@ -345,6 +376,11 @@ class Trochal {
     return { group, offset: sector.getAngle() }
   }
 
+  /**
+   * Adds an event listener to the given group.
+   * @param {Group} group - the group to add the event listener to.
+   * @returns None
+   */
   innerGroupAddEventer(group) {
     const layer = this.selectLayer('inner')
 
@@ -400,6 +436,14 @@ class Trochal {
     return wedge
   }
 
+  /**
+   * Creates a sector of the outer ring.
+   * @param {number} angle - the angle of the wedge.
+   * @param {number} rotation - the rotation of the wedge.
+   * @param {string} id - the id of the wedge.
+   * @param {string} name - the name of the wedge.
+   * @returns {Konva.Wedge} - the wedge object.
+   */
   createOuterSector({ angle, rotation, id, name }) {
     const { radius, originX: x, originY: y } = this
     const wedge = new Konva.Wedge({
@@ -442,28 +486,34 @@ class Trochal {
     })
     layer.on('setStartCurrent', ({ id }) => {
       if (text.getParent().id() === id) {
-        // text.fill(this.innerWedgeActiveFill)
       }
     })
     layer.on('setActiveFill', ({ textId }) => {
       if (text.id() === textId) {
-        // text.fill(this.innerWedgeActiveFill)
       }
     })
     return text
   }
+
+  /**
+   * An inner animation function that animates the inner layer of the wedge.
+   * @param {Wedge} wedge - the wedge to animate.
+   * @returns None
+   */
   innerAnimation({ wedge }) {
     const layer = this.selectLayer('inner')
     const wedgeRotation = wedge.getRotation()
     const rotation = layer.getRotation()
 
     let targetAngle = rotation - (wedgeRotation - this.startCurrentAngle + rotation)
+
     if (targetAngle >= 0) {
       targetAngle = targetAngle - 360
     }
     if (targetAngle <= -180) {
       targetAngle = targetAngle + 360
     }
+
     const tween = new Konva.Tween({
       node: layer,
       duration: 1,
@@ -474,6 +524,10 @@ class Trochal {
     tween.play()
   }
 
+  /**
+   * An animation that rotates the outer layer of the wedge.
+   * @param {Wedge} wedge - the wedge to rotate
+   */
   outerAnimation({ wedge }) {
     const layer = this.selectLayer('outer')
     const innerWedgeName = wedge.name()
