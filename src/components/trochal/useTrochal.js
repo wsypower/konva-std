@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-15 21:01:59
+ * @LastEditTime: 2023-02-15 21:07:01
  * @LastEditors: wsy
  */
 
@@ -23,7 +23,7 @@ class Trochal {
    * The x coordinate of the origin of the filter.
    * @type {number}
    */
-  originX = 550
+  originX = 575
 
   /**
    * The y-coordinate of the origin of the filter.
@@ -35,7 +35,6 @@ class Trochal {
    * The radius of the circle that the filter is applied to.
    * @type {number}
    */
-  // TODO 800
   radius = 800
 
   /**
@@ -101,7 +100,7 @@ class Trochal {
    */
   startCurrentAngle = 0
 
-  padding = 480
+  padding = 460
 
   data = []
 
@@ -367,9 +366,8 @@ class Trochal {
         const text = this.createOuterText({
           rotation: textRotaion,
           value: children[i].name,
-          offsetX: -this.padding - this.radius * 0.7,
+          offsetX: -this.padding - this.radius * 0.6,
           offsetY: -22,
-          fontSize: 18,
           name: `${id}-sector`,
           id: `${id}-text`,
           idx
@@ -480,7 +478,8 @@ class Trochal {
       x,
       y,
       text: value,
-      fontSize: 24,
+      fontSize: 26,
+      fontStyle: 'bold',
       padding: 0,
       fill: 'white',
       strokeWidth: 3,
@@ -508,16 +507,17 @@ class Trochal {
    * @param {string} value - the value of the text object.
    * @returns {Konva.Text} - the text object.
    */
-  createOuterText({ rotation, value, offsetX, offsetY, fontSize }) {
+  createOuterText({ rotation, value, offsetX, offsetY }) {
     const { originX: x, originY: y } = this
     const layer = this.selectLayer('inner')
     const text = new Konva.Text({
       x,
       y,
       text: value,
-      fontSize,
+      fontSize: 20,
       padding: 0,
       fill: 'white',
+      fontStyle: 'bold',
       strokeWidth: 3,
       height: this.outerSectorAngleChildren,
       align: 'center',
