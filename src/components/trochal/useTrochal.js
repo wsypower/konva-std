@@ -2,7 +2,7 @@
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-15 15:38:30
+ * @LastEditTime: 2023-02-15 16:08:22
  * @LastEditors: wsy
  */
 
@@ -534,7 +534,21 @@ class Trochal {
     return arr
   }
 
+  /**
+   * Searches for a wedge in the given layer and group.
+   * @param {string} layerName - the name of the layer to search in
+   * @param {string} groupName - the name of the group to search in
+   * @param {string} wedgeName - the name of the wedge to search for
+   * @returns {Layer} the wedge layer
+   */
   searchWedge(layerName, groupName, wedgeName) {
+    const mapInnerIndexToOuterIndex = (name) =>
+      name.replace(/\d+/s, (match) => match % this.rawData.length)
+
+    groupName = mapInnerIndexToOuterIndex(groupName)
+
+    wedgeName = mapInnerIndexToOuterIndex(wedgeName)
+
     let layer = this.selectLayer(layerName)
     return layer
       .getChildren((node) => node.name() === groupName)
