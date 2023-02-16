@@ -88,7 +88,7 @@ class Trochal {
    * The color of the inner wedge of the filter.
    * @type {string}
    */
-  innerWedgeFill = ''
+  innerWedgeFill = {}
 
   /**
    * The color of the inner wedge of the active fill.
@@ -500,26 +500,57 @@ class Trochal {
     })
     layer.on('setStartCurrent', ({ id }) => {
       if (wedge.getParent().id() === id) {
-        wedge.fill(this.innerWedgeActiveFill)
+        // wedge.fill(this.innerWedgeActiveFill)
+        this.fillInnerRadialGradient(wedge)
         this.startCurrentAngle = wedge.rotation()
       }
     })
     layer.on('setActiveFill', ({ wedgeId }) => {
       if (wedge.id() === wedgeId) {
-        wedge.fill(this.innerWedgeActiveFill)
+        // wedge.fill(this.innerWedgeActiveFill)
+        this.fillInnerRadialGradient(wedge)
         this.innerAnimation({ wedge })
         this.outerAnimation({ wedge })
       }
     })
     layer.on('resetFill', ({ wedgeId }) => {
       if (wedge.id() !== wedgeId) {
-        wedge.fill(this.innerWedgeFill)
+        for (const [key, value] of Object.entries(this.innerWedgeFill)) {
+          wedge[key](value)
+        }
       }
     })
 
     return wedge
   }
+  fillInnerRadialGradient(wedge) {
+    if (Object.keys(this.innerWedgeFill).length === 0) {
+      this.innerWedgeFill = {
+        fillRadialGradientStartPoint: wedge.fillRadialGradientStartPoint(),
+        fillRadialGradientEndPoint: wedge.fillRadialGradientEndPoint(),
+        fillRadialGradientStartRadius: wedge.fillRadialGradientStartRadius(),
+        fillRadialGradientEndRadius: wedge.fillRadialGradientEndRadius(),
+        fillRadialGradientColorStops: wedge.fillRadialGradientColorStops()
+      }
+    }
 
+    wedge.fillRadialGradientStartPoint({ x: 0, y: 0 })
+    wedge.fillRadialGradientEndPoint({ x: 30, y: 0 })
+    wedge.fillRadialGradientStartRadius(this.radius / 3)
+    wedge.fillRadialGradientEndRadius(this.radius)
+    wedge.fillRadialGradientColorStops([
+      0,
+      'transparent',
+      0.6,
+      'rgba(6,100,208,0.4)',
+      0.78,
+      '#0658D0',
+      0.88,
+      '#0664D0',
+      1,
+      '#01A5F0'
+    ])
+  }
   /**
    * Creates a sector of the outer ring.
    * @param {number} angle - the angle of the wedge.
