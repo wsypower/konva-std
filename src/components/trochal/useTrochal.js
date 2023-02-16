@@ -526,18 +526,13 @@ class Trochal {
   fillInnerRadialGradient(wedge) {
     if (Object.keys(this.innerWedgeFill).length === 0) {
       this.innerWedgeFill = {
-        fillRadialGradientStartPoint: wedge.fillRadialGradientStartPoint(),
-        fillRadialGradientEndPoint: wedge.fillRadialGradientEndPoint(),
         fillRadialGradientStartRadius: wedge.fillRadialGradientStartRadius(),
-        fillRadialGradientEndRadius: wedge.fillRadialGradientEndRadius(),
-        fillRadialGradientColorStops: wedge.fillRadialGradientColorStops()
+        fillRadialGradientColorStops: wedge.fillRadialGradientColorStops(),
+        strokeLinearGradientColorStops: wedge.strokeLinearGradientColorStops()
       }
     }
 
-    wedge.fillRadialGradientStartPoint({ x: 0, y: 0 })
-    wedge.fillRadialGradientEndPoint({ x: 30, y: 0 })
     wedge.fillRadialGradientStartRadius(this.radius / 3)
-    wedge.fillRadialGradientEndRadius(this.radius)
     wedge.fillRadialGradientColorStops([
       0,
       'transparent',
@@ -549,6 +544,22 @@ class Trochal {
       '#0664D0',
       1,
       '#01A5F0'
+    ])
+    wedge.strokeLinearGradientColorStops([
+      0,
+      'rgba(64,149,198,0.0)',
+      0.45,
+      'rgba(64,149,198,0)',
+      0.5,
+      'rgba(64,149,198,0)',
+      0.7,
+      'rgba(64,149,198,0.2)',
+      0.8,
+      'rgba(1,206,255,1)',
+      0.9,
+      'rgba(64,149,198,0.8)',
+      1,
+      'rgba(64,149,198,0.1)'
     ])
   }
   /**
