@@ -304,7 +304,6 @@ class Trochal {
     })
     this.layers.set(name, layer)
     this.stage.add(layer)
-    // TODO: remove this line
     layer.zIndex(0)
 
     return layer
@@ -464,8 +463,6 @@ class Trochal {
       y,
       radius,
       angle,
-      // fill: this.innerWedgeFill,
-      // stroke: this.innerwedgeStroke,
       rotation,
       id,
       fillRadialGradientStartPoint: {
@@ -533,16 +530,45 @@ class Trochal {
    */
   createOuterSector({ angle, rotation, id, name }) {
     const { radius, originX: x, originY: y } = this
+    const outerRadius = radius + this.padding
     const wedge = new Konva.Wedge({
       x,
       y,
-      radius: radius + this.padding,
+      radius: outerRadius,
       angle,
-      fill: this.innerWedgeFill,
-      // stroke: this.innerwedgeStroke,
       rotation,
       id,
-      name
+      name,
+      fillRadialGradientStartPoint: {
+        x: 0,
+        y: 0
+      },
+      fillRadialGradientEndPoint: {
+        x: 200,
+        y: 0
+      },
+      fillRadialGradientStartRadius: outerRadius / 2,
+      fillRadialGradientEndRadius: outerRadius,
+      fillRadialGradientColorStops: [0, 'transparent', 1, 'rgba(3, 58, 141, 1)'],
+      strokeWidth: 2,
+      strokeLinearGradientStartPoint: { x: 0, y: 0 },
+      strokeLinearGradientEndPoint: { x: outerRadius, y: 0 },
+      strokeLinearGradientColorStops: [
+        0,
+        'rgba(64,149,198,0.0)',
+        0.45,
+        'rgba(64,149,198,0)',
+        0.5,
+        'rgba(64,149,198,0)',
+        0.6,
+        'rgba(64,149,198,0)',
+        0.7,
+        'rgba(64,149,198,0.1)',
+        0.8,
+        'rgba(64,149,198,0.4)',
+        1,
+        'rgba(64,149,198,0)'
+      ]
     })
 
     return wedge
