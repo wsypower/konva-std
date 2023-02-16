@@ -1,8 +1,49 @@
 /*
+ *                                |~~~~~~~|
+ *                                |       |
+ *                                |       |
+ *                                |       |
+ *                                |       |
+ *                                |       |
+ *     |~.\\\_\~~~~~~~~~~~~~~xx~~~         ~~~~~~~~~~~~~~~~~~~~~/_//;~|
+ *     |  \  o \_         ,XXXXX),                         _..-~ o /  |
+ *     |    ~~\  ~-.     XXXXX`)))),                 _.--~~   .-~~~   |
+ *      ~~~~~~~`\   ~\~~~XXX' _/ ';))     |~~~~~~..-~     _.-~ ~~~~~~~
+ *               `\   ~~--`_\~\, ;;;\)__.---.~~~      _.-~
+ *                 ~-.       `:;;/;; \          _..-~~
+ *                    ~-._      `''        /-~-~
+ *                        `\              /  /
+ *                          |         ,   | |
+ *                           |  '        /  |
+ *                            \/;          |
+ *                             ;;          |
+ *                             `;   .       |
+ *                             |~~~-----.....|
+ *                            | \             \
+ *                           | /\~~--...__    |
+ *                           (|  `\       __-\|
+ *                           ||    \_   /~    |
+ *                           |)     \~-'      |
+ *                            |      | \      '
+ *                            |      |  \    :
+ *                             \     |  |    |
+ *                              |    )  (    )
+ *                               \  /;  /\  |
+ *                               |    |/   |
+ *                               |    |   |
+ *                                \  .'  ||
+ *                                |  |  | |
+ *                                (  | |  |
+ *                                |   \ \ |
+ *                                || o `.)|
+ *                                |`\\) |
+ *                                |       |
+ *                                |       |
+ *
  * @Description: useTrochal
  * @Author: wsy
  * @Date: 2023-02-13 18:18:32
- * @LastEditTime: 2023-02-15 22:58:40
+ * @LastEditTime: 2023-02-16 18:31:22
  * @LastEditors: wsy
  */
 
@@ -41,13 +82,13 @@ class Trochal {
    * The color to fill the page with.
    * @type {string}
    */
-  fill = '#75A99D'
+  fill = ''
 
   /**
    * The color of the inner wedge of the filter.
    * @type {string}
    */
-  innerWedgeFill = '#DADBDD'
+  innerWedgeFill = ''
 
   /**
    * The color of the inner wedge of the active fill.
@@ -63,7 +104,7 @@ class Trochal {
   /**
    * The color of the inner wedge stroke.
    */
-  innerwedgeStroke = 'red'
+  innerwedgeStroke = '#1D64A0'
 
   /**
    * The width of the stroke used to draw the border around the filter.
@@ -138,6 +179,9 @@ class Trochal {
     this.rawData = this.data
     this.data = this.normalizeData(multiple, remainder)
 
+    // const opacityArr = Array.from({ length: this.rawData.length }, (item, index) => {
+    //   console.log(item)
+    // })
     for (let i = 0; i < innerSectorSize; i++) {
       const angle = this.innerSectorAngle
       const rotation = i * angle - offsetAngle
@@ -151,6 +195,7 @@ class Trochal {
         name,
         idx
       })
+      // group.opacity(0.1)
     }
   }
 
@@ -191,6 +236,8 @@ class Trochal {
         name,
         idx
       })
+
+      // group.opacity(0)
     }
   }
 
@@ -288,6 +335,11 @@ class Trochal {
       stroke,
       strokeWidth
     })
+    circle.fillRadialGradientEndPoint({
+      x: 20,
+      y: 10
+    })
+    circle.fillRadialGradientColorStops(0, 'red', 0.5, 'blue', 1, 'green')
     return circle
   }
 
@@ -321,6 +373,7 @@ class Trochal {
       id: `${id}-sector`,
       idx
     })
+
     group.add(sector)
     if (this.data[idx]) {
       const text = this.createText({
@@ -376,7 +429,7 @@ class Trochal {
       }
     }
     layer.add(group)
-    return { group, offset: sector.getAngle() }
+    return group
   }
 
   /**
@@ -405,18 +458,49 @@ class Trochal {
   createInnerSector({ angle, rotation, id, name }) {
     const { radius, originX: x, originY: y } = this
     const layer = this.selectLayer('inner')
+
     const wedge = new Konva.Wedge({
       x,
       y,
       radius,
       angle,
-      fill: this.innerWedgeFill,
-      stroke: this.innerwedgeStroke,
+      // fill: this.innerWedgeFill,
+      // stroke: this.innerwedgeStroke,
       rotation,
       id,
+      fillRadialGradientStartPoint: {
+        x: 0,
+        y: 0
+      },
+      fillRadialGradientEndPoint: {
+        x: 30,
+        y: 0
+      },
+      fillRadialGradientStartRadius: radius / 4,
+      fillRadialGradientEndRadius: radius, // #023779
+      fillRadialGradientColorStops: [0, 'transparent', 1, '#033A8D'],
+
+      strokeWidth: 2,
+      strokeLinearGradientStartPoint: { x: 0, y: 0 },
+      strokeLinearGradientEndPoint: { x: radius, y: 0 },
+      strokeLinearGradientColorStops: [
+        0,
+        'rgba(64,149,198,0.0)',
+        0.45,
+        'rgba(64,149,198,0)',
+        0.5,
+        'rgba(64,149,198,0)',
+        0.6,
+        'rgba(64,149,198,0.1)',
+        0.7,
+        'rgba(64,149,198,0.5)',
+        0.8,
+        'rgba(64,149,198,0.25)',
+        1,
+        'rgba(64,149,198,0.1)'
+      ],
       name
     })
-
     layer.on('setStartCurrent', ({ id }) => {
       if (wedge.getParent().id() === id) {
         wedge.fill(this.innerWedgeActiveFill)
@@ -455,7 +539,7 @@ class Trochal {
       radius: radius + this.padding,
       angle,
       fill: this.innerWedgeFill,
-      stroke: this.innerwedgeStroke,
+      // stroke: this.innerwedgeStroke,
       rotation,
       id,
       name
