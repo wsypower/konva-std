@@ -600,20 +600,22 @@ class Trochal {
       }
     }
     const outerRadius = this.radius + this.padding
-    wedge.fillRadialGradientStartRadius(this.radius / 2)
+    wedge.fillRadialGradientStartRadius(outerRadius / 4)
     wedge.fillRadialGradientColorStops([
       0,
       'transparent',
+      0.5,
+      'rgba(6,100,208,0)',
       0.6,
       'rgba(6,100,208,0.1)',
       0.78,
-      'rgba(6,88,208,0.5)',
+      'rgba(6,88,208,0.4)',
       0.9,
-      'rgba(6,100,208,0.9)',
+      'rgba(6,100,208,0.8)',
       1,
-      'rgba(1,165,240,1)'
+      'rgba(6,100,208,1)'
     ])
-    wedge.strokeLinearGradientEndPoint({ x: outerRadius, y: 15 })
+    wedge.strokeLinearGradientEndPoint({ x: outerRadius, y: outerRadius })
     wedge.strokeLinearGradientColorStops([
       0,
       'rgba(64,149,198,0.0)',
@@ -622,14 +624,16 @@ class Trochal {
       0.5,
       'rgba(64,149,198,0)',
       0.7,
-      'rgba(64,149,198,0.1)',
+      'rgba(64,149,198,0.5)',
+      0.8,
+      'rgba(6,100,208,1)',
       1,
-      'rgba(64,149,198,0.3)'
+      '#01A5F0'
     ])
-    wedge.shadowColor('rgba(64,149,198,0.3)')
-    wedge.shadowBlur(130)
+    wedge.shadowColor('rgba(1,165,240,0.4)')
+    wedge.shadowBlur(100)
     wedge.shadowOffset({
-      x: 20,
+      x: -10,
       y: 20
     })
     wedge.zIndex(this.rawData.length - 1)
