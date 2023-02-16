@@ -85,10 +85,20 @@ class Trochal {
   fill = ''
 
   /**
-   * The color of the inner wedge of the filter.
-   * @type {string}
+   * A function that takes in a wedge and fills it with the given color.
+   * @param {Wedge} wedge - the wedge to fill
+   * @param {string} color - the color to fill the wedge with
+   * @returns None
    */
   innerWedgeFill = {}
+
+  /**
+   * A function that takes in a string of code and returns a string of code that is formatted
+   * to be used as a CSS filter style sheet.
+   * @param {string} code - the code to format
+   * @returns {string} - the formatted code
+   */
+  outerWedgeFill = {}
 
   /**
    * The color of the inner wedge of the active fill.
@@ -500,23 +510,38 @@ class Trochal {
     })
     layer.on('setStartCurrent', ({ id }) => {
       if (wedge.getParent().id() === id) {
-        // wedge.fill(this.innerWedgeActiveFill)
         this.fillInnerRadialGradient(wedge)
         this.startCurrentAngle = wedge.rotation()
+
+        Promise.resolve().then(() => {
+          const innerWedgeName = wedge.name()
+          const outerGroupName = wedge.getParent().name().replace('inner', 'outer')
+          const outerWedgeName = innerWedgeName.replace('inner', 'outer')
+          const outerWedge = this.searchWedge('outer', outerGroupName, outerWedgeName)
+
+          this.fillOuterRadialGradient(outerWedge)
+        })
       }
     })
+
     layer.on('setActiveFill', ({ wedgeId }) => {
       if (wedge.id() === wedgeId) {
-        // wedge.fill(this.innerWedgeActiveFill)
         this.fillInnerRadialGradient(wedge)
         this.innerAnimation({ wedge })
         this.outerAnimation({ wedge })
       }
     })
     layer.on('resetFill', ({ wedgeId }) => {
+      const innerWedgeName = wedge.name()
+      const outerGroupName = wedge.getParent().name().replace('inner', 'outer')
+      const outerWedgeName = innerWedgeName.replace('inner', 'outer')
+      const outerWedge = this.searchWedge('outer', outerGroupName, outerWedgeName)
       if (wedge.id() !== wedgeId) {
         for (const [key, value] of Object.entries(this.innerWedgeFill)) {
           wedge[key](value)
+        }
+        for (const [key, value] of Object.entries(this.outerWedgeFill)) {
+          outerWedge[key](value)
         }
       }
     })
@@ -560,6 +585,47 @@ class Trochal {
       'rgba(64,149,198,0.8)',
       1,
       'rgba(64,149,198,0.1)'
+    ])
+  }
+
+  fillOuterRadialGradient(wedge) {
+    if (Object.keys(this.outerWedgeFill).length === 0) {
+      this.outerWedgeFill = {
+        fillRadialGradientColorStops: wedge.fillRadialGradientColorStops(),
+        fillRadialGradientStartRadius: wedge.fillRadialGradientStartRadius(),
+        strokeLinearGradientColorStops: wedge.strokeLinearGradientColorStops()
+      }
+    }
+    const outerRadius = this.radius + this.padding
+    wedge.fillRadialGradientStartRadius(this.radius / 2)
+    wedge.fillRadialGradientColorStops([
+      0,
+      'transparent',
+      0.6,
+      'rgba(6,100,208,0.1)',
+      0.78,
+      'rgba(6,88,208,0.5)',
+      0.9,
+      'rgba(6,100,208,0.9)',
+      1,
+      'rgba(1,165,240,1)'
+    ])
+    wedge.strokeLinearGradientEndPoint({ x: outerRadius, y: 15 })
+    wedge.strokeLinearGradientColorStops([
+      0,
+      'rgba(64,149,198,0.0)',
+      0.45,
+      'rgba(64,149,198,0)',
+      0.5,
+      'rgba(64,149,198,0)',
+      0.7,
+      'rgba(64,149,198,0.2)',
+      0.8,
+      'rgba(1,206,255,0.4)',
+      0.9,
+      'rgba(64,149,198,0.8)',
+      1,
+      'rgba(64,149,198,0.4)'
     ])
   }
   /**
@@ -728,10 +794,9 @@ class Trochal {
     const outerGroupName = wedge.getParent().name().replace('inner', 'outer')
     const outerWedgeName = innerWedgeName.replace('inner', 'outer')
     const outerWedge = this.searchWedge('outer', outerGroupName, outerWedgeName)
-
+    this.fillOuterRadialGradient(outerWedge)
     const outerAngle = outerWedge.getRotation()
     const rotation = layer.getRotation()
-
     let targetAngle = rotation - (outerAngle - this.startCurrentAngle + rotation)
 
     if (targetAngle >= 0) {
