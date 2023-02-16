@@ -593,7 +593,10 @@ class Trochal {
       this.outerWedgeFill = {
         fillRadialGradientColorStops: wedge.fillRadialGradientColorStops(),
         fillRadialGradientStartRadius: wedge.fillRadialGradientStartRadius(),
-        strokeLinearGradientColorStops: wedge.strokeLinearGradientColorStops()
+        strokeLinearGradientColorStops: wedge.strokeLinearGradientColorStops(),
+        shadowColor: wedge.shadowColor(),
+        shadowBlur: wedge.shadowBlur(),
+        shadowOffset: wedge.shadowOffset()
       }
     }
     const outerRadius = this.radius + this.padding
@@ -619,14 +622,17 @@ class Trochal {
       0.5,
       'rgba(64,149,198,0)',
       0.7,
-      'rgba(64,149,198,0.2)',
-      0.8,
-      'rgba(1,206,255,0.4)',
-      0.9,
-      'rgba(64,149,198,0.8)',
+      'rgba(64,149,198,0.1)',
       1,
-      'rgba(64,149,198,0.4)'
+      'rgba(64,149,198,0.3)'
     ])
+    wedge.shadowColor('rgba(64,149,198,0.3)')
+    wedge.shadowBlur(130)
+    wedge.shadowOffset({
+      x: 20,
+      y: 20
+    })
+    wedge.zIndex(this.rawData.length - 1)
   }
   /**
    * Creates a sector of the outer ring.
