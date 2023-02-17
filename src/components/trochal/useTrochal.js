@@ -144,7 +144,7 @@ class Trochal {
    * @param {number} startCurrent - the number to start the current index at.
    * @returns None
    */
-  startCurrent = 2
+  startCurrent = 3
 
   /**
    * The starting angle of the current animation.
@@ -164,24 +164,49 @@ class Trochal {
   initStage(container) {
     this.stage = this.createStage(container)
     this.createLayer('inner')
+    this.createLayer('outerWarp')
     this.createLayer('outer')
+
+    this.createLayer('innerWarp')
   }
   /**
    * Draws the filter.
    * @returns None
    */
   draw() {
+    this.drawInnerWarp()
     this.drawInner()
-    // this.clipInner()
+
+    this.drawOuterWarp()
     this.drawOuter()
   }
+  drawInnerWarp() {
+    this.drawInnerCircle('innerWarp')
+  }
+  drawOuterWarp() {
+    const radius = this.radius + this.padding
+    const strokeLinearGradientColorStops = [
+      0,
+      'rgba(1,206,255,0)',
+      0.9,
+      'rgba(1,206,255,0)',
+      1,
+      'rgba(1,206,255,0.8)'
+    ]
+    let warpLine = this.drawInnerCircle('outerWarp', radius)
+    warpLine.strokeLinearGradientColorStops(strokeLinearGradientColorStops)
 
+    let warpShow = this.drawInnerCircle('outerWarp', radius + 20)
+    warpShow.strokeLinearGradientColorStops(strokeLinearGradientColorStops)
+
+    let warpShowOverlap = this.drawInnerCircle('outerWarp', radius + 35)
+    warpShowOverlap.strokeLinearGradientColorStops(strokeLinearGradientColorStops)
+  }
   /**
    * Draws the inner circle of the pie chart.
    * @returns None
    */
   drawInner() {
-    this.drawInnerCircle()
     const innerSectorSize = Math.floor(360 / this.innerSectorAngle)
     const offsetAngle = (this.innerSectorAngle * this.data.length) / 2
     const remainder = innerSectorSize % this.data.length
@@ -189,10 +214,6 @@ class Trochal {
 
     this.rawData = this.data
     this.data = this.normalizeData(multiple, remainder)
-
-    // const opacityArr = Array.from({ length: this.rawData.length }, (item, index) => {
-    //   console.log(item)
-    // })
 
     for (let i = 0; i < innerSectorSize; i++) {
       const angle = this.innerSectorAngle
@@ -207,33 +228,7 @@ class Trochal {
         name,
         idx
       })
-      // group.opacity(opacityArr[i] ?? 0)
     }
-  }
-
-  clipInner() {
-    const layerInner = this.layers.get('inner')
-    var clipWedge = new Konva.Wedge({
-      radius: 1200,
-      angle: 90,
-      shadowColor: 'red',
-      shadowBlur: 10,
-      shadowOffset: { x: -10, y: -10 }
-      // fill: 'red'
-      // rotation: 125
-    })
-    // layerInner.y(600)
-    // layerInner.x(1400)
-    // layerInner.rotation(-35)
-
-    layerInner.clipFunc(function (ctx) {
-      ctx.beginPath()
-      ctx.moveTo(500, 500)
-      ctx.beginPath()
-      clipWedge.sceneFunc().call(clipWedge, ctx)
-      ctx.closePath()
-      ctx.clip()
-    })
   }
 
   /**
@@ -242,6 +237,7 @@ class Trochal {
    */
   drawOuter() {
     this.drawOuterCircle()
+
     const rawData = toRaw(this.rawData)
 
     // pre iterate to get the total angle
@@ -282,9 +278,30 @@ class Trochal {
    * Draws the inner circle of the filter.
    * @returns None
    */
-  drawInnerCircle() {
-    let layer = this.layers.get('inner')
-    const circle = this.createCircle()
+  drawInnerCircle(name = 'inner', radius = this.radius) {
+    let layer = this.layers.get(name)
+    const circle = new Konva.Circle({
+      x: this.originX,
+      y: this.originY,
+      radius: radius + 1,
+      strokeWidth: 3,
+      strokeLinearGradientStartPoint: { x: 0, y: 0 },
+      strokeLinearGradientEndPoint: { x: radius, y: 0 },
+      strokeLinearGradientColorStops: [
+        0,
+        'rgba(1,206,255,0)',
+        0.8,
+        'rgba(1,206,255,0)',
+        1,
+        'rgba(1,206,255,1)'
+      ],
+      shadowColor: 'black',
+      shadowBlur: 20,
+      shadowOffset: {
+        x: 10,
+        y: 0
+      }
+    })
     layer.add(circle)
     return circle
   }
@@ -1078,8 +1095,23 @@ export default defineComponent({
           {
             name: '人工智能',
             value: [
-              { name: '云存储', value: 10 },
-              { name: '大数据', value: 10 }
+              { name: '云计算-1', value: 10 },
+              { name: '云存储-1', value: 10 },
+              { name: '云安全-1', value: 10 },
+              { name: '云服务-1', value: 10 },
+              { name: '大数据-1', value: 10 },
+              { name: '人工智能-1', value: 10 },
+              { name: '物联网-1', value: 10 },
+              { name: '视联网-1', value: 10 },
+              { name: '网络信息安全-1', value: 10 },
+              { name: '企业应用与服务-1', value: 10 },
+              { name: '云计算-1', value: 10 },
+              { name: '云存储-1', value: 10 },
+              { name: '云安全-1', value: 10 },
+              { name: '云服务-1', value: 10 },
+              { name: '大数据-1', value: 10 },
+              { name: '云服务-1', value: 10 },
+              { name: '大数据-1', value: 10 }
             ]
           },
           {
