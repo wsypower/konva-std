@@ -415,7 +415,7 @@ class Trochal {
       const text = this.createText({
         rotation: rotation + angle / 2.6,
         value: this.data[idx].name,
-        name: `${id}-sector`,
+        name: `${id}-text`,
         id: `${id}-text`
       })
       group.add(text)
@@ -560,6 +560,11 @@ class Trochal {
         this.fillInnerRadialGradient(wedge)
         this.innerAnimation({ wedge })
         this.outerAnimation({ wedge })
+
+        // const group = wedge.getParent()
+        // const groupId = group.id()
+        // console.log(groupId)
+        // const viewport = layer.get
       }
     })
     layer.on('resetFill', ({ wedgeId }) => {
@@ -818,9 +823,27 @@ class Trochal {
       node: layer,
       duration: 1,
       easing: Konva.Easings.EaseInOut,
-      rotation: targetAngle
+      rotation: targetAngle,
+      onFinish: () => {
+        const wedgesGroup = layer.getChildren((node) => node.name().includes('group'))
+        for (let i = 0; i < wedgesGroup.length; i++) {
+          const group = wedgesGroup[i]
+          const wedge = group
+            .getChildren((node) => {
+              return node.name().includes('sector')
+            })
+            .at(0)
+          const targetRotation = wedge.getAbsoluteRotation()
+          const opacity = this.mapAngleToRange(targetRotation)
+          new Konva.Tween({
+            node: group,
+            duration: 1,
+            easing: Konva.Easings.Linear,
+            opacity: opacity
+          }).play()
+        }
+      }
     })
-
     tween.play()
   }
 
