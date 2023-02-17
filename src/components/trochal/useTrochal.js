@@ -120,7 +120,7 @@ class Trochal {
    * The width of the stroke used to draw the border around the filter.
    * @type {number}
    */
-  strokeWidth = 4
+  strokeWidth = 2
 
   /**
    * The angle of the inner sector of the circle.
@@ -151,7 +151,7 @@ class Trochal {
    */
   startCurrentAngle = 0
 
-  padding = 460
+  padding = 450
 
   data = []
 
@@ -172,6 +172,7 @@ class Trochal {
    */
   draw() {
     this.drawInner()
+    // this.clipInner()
     this.drawOuter()
   }
 
@@ -192,6 +193,7 @@ class Trochal {
     // const opacityArr = Array.from({ length: this.rawData.length }, (item, index) => {
     //   console.log(item)
     // })
+
     for (let i = 0; i < innerSectorSize; i++) {
       const angle = this.innerSectorAngle
       const rotation = i * angle - offsetAngle
@@ -207,6 +209,31 @@ class Trochal {
       })
       // group.opacity(0.1)
     }
+  }
+
+  clipInner() {
+    const layerInner = this.layers.get('inner')
+    // const centerX = this.stage.width() / 2
+    // const centerY = this.stage.height() / 2
+    // const radius = 200
+    var clipWedge = new Konva.Wedge({
+      x: 350,
+      y: 350,
+      radius: 200,
+      angle: 90,
+      fill: 'red',
+      rotation: -125
+    })
+    layerInner.x(this.originX)
+    layerInner.y(this.originY)
+    layerInner.clipFunc(function (ctx) {
+      ctx.beginPath()
+      ctx.moveTo(500, 500)
+      ctx.beginPath()
+      clipWedge.sceneFunc().call(clipWedge, ctx)
+      ctx.closePath()
+      ctx.clip()
+    })
   }
 
   /**
@@ -605,9 +632,9 @@ class Trochal {
       0,
       'transparent',
       0.5,
-      'rgba(6,100,208,0)',
+      'rgba(6,100,208,0.05)',
       0.6,
-      'rgba(6,100,208,0.1)',
+      'rgba(6,100,208,0.2)',
       0.78,
       'rgba(6,88,208,0.4)',
       0.9,
@@ -636,7 +663,6 @@ class Trochal {
       x: -10,
       y: 20
     })
-    wedge.zIndex(this.rawData.length - 1)
   }
   /**
    * Creates a sector of the outer ring.
