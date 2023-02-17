@@ -152,7 +152,7 @@ class Trochal {
   startCurrentAngle = 0
 
   padding = 450
-
+  activeId = 0
   data = []
 
   rawData = []
@@ -420,14 +420,13 @@ class Trochal {
       })
       group.add(text)
     }
-
-    const sectorAbsoluteRotation = sector.getAbsoluteRotation()
-    group.opacity(this.mapAngleToRange(sectorAbsoluteRotation))
     layer.add(group)
     this.innerGroupAddEventer(group)
     if (idx === this.startCurrent) {
       layer.fire('setStartCurrent', { id: group.id() })
     }
+    const sectorAbsoluteRotation = sector.getAbsoluteRotation()
+    group.opacity(this.mapAngleToRange(sectorAbsoluteRotation))
     return group
   }
 
@@ -540,16 +539,19 @@ class Trochal {
     })
 
     layer.on('setStartCurrent', ({ id }) => {
-      if (wedge.getParent().id() === id) {
+      let group = wedge.getParent()
+      if (group.id() === id) {
         this.fillInnerRadialGradient(wedge)
         this.startCurrentAngle = wedge.rotation()
-
+        this.activeId = wedge.id()
         Promise.resolve().then(() => {
+          if (wedge.id() === this.activeId) {
+            this.active({ group })
+          }
           const innerWedgeName = wedge.name()
           const outerGroupName = wedge.getParent().name().replace('inner', 'outer')
           const outerWedgeName = innerWedgeName.replace('inner', 'outer')
           const outerWedge = this.searchWedge('outer', outerGroupName, outerWedgeName)
-
           this.fillOuterRadialGradient(outerWedge)
         })
       }
@@ -557,14 +559,11 @@ class Trochal {
 
     layer.on('setActiveFill', ({ wedgeId }) => {
       if (wedge.id() === wedgeId) {
+        this.activeId = wedge.id()
+        this.active({ wedge })
         this.fillInnerRadialGradient(wedge)
         this.innerAnimation({ wedge })
         this.outerAnimation({ wedge })
-
-        // const group = wedge.getParent()
-        // const groupId = group.id()
-        // console.log(groupId)
-        // const viewport = layer.get
       }
     })
     layer.on('resetFill', ({ wedgeId }) => {
@@ -826,6 +825,7 @@ class Trochal {
       rotation: targetAngle,
       onFinish: () => {
         const wedgesGroup = layer.getChildren((node) => node.name().includes('group'))
+
         for (let i = 0; i < wedgesGroup.length; i++) {
           const group = wedgesGroup[i]
           const wedge = group
@@ -833,11 +833,18 @@ class Trochal {
               return node.name().includes('sector')
             })
             .at(0)
+
           const targetRotation = wedge.getAbsoluteRotation()
-          const opacity = this.mapAngleToRange(targetRotation)
+
+          let opacity = this.mapAngleToRange(targetRotation)
+          let duration = 0.5
+          if (this.activeId === wedge.id()) {
+            opacity = 1
+            duration = 0
+          }
           new Konva.Tween({
             node: group,
-            duration: 1,
+            duration,
             easing: Konva.Easings.Linear,
             opacity: opacity
           }).play()
@@ -936,7 +943,13 @@ class Trochal {
       .getChildren((node) => node.name() === wedgeName)
       .at(0)
   }
-
+  active({ wedge, group }) {
+    if (group) {
+      group.opacity(1)
+    } else if (wedge) {
+      wedge.getParent().opacity(1)
+    }
+  }
   mapAngleToRange(angle) {
     const displayInterval = 65
     if (angle === 0) {
