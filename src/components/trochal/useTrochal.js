@@ -207,25 +207,25 @@ class Trochal {
         name,
         idx
       })
-      // group.opacity(0.1)
+      // group.opacity(opacityArr[i] ?? 0)
     }
   }
 
   clipInner() {
     const layerInner = this.layers.get('inner')
-    // const centerX = this.stage.width() / 2
-    // const centerY = this.stage.height() / 2
-    // const radius = 200
     var clipWedge = new Konva.Wedge({
-      x: 350,
-      y: 350,
-      radius: 200,
+      radius: 1200,
       angle: 90,
-      fill: 'red',
-      rotation: -125
+      shadowColor: 'red',
+      shadowBlur: 10,
+      shadowOffset: { x: -10, y: -10 }
+      // fill: 'red'
+      // rotation: 125
     })
-    layerInner.x(this.originX)
-    layerInner.y(this.originY)
+    // layerInner.y(600)
+    // layerInner.x(1400)
+    // layerInner.rotation(-35)
+
     layerInner.clipFunc(function (ctx) {
       ctx.beginPath()
       ctx.moveTo(500, 500)
@@ -420,6 +420,9 @@ class Trochal {
       })
       group.add(text)
     }
+
+    const sectorAbsoluteRotation = sector.getAbsoluteRotation()
+    group.opacity(this.mapAngleToRange(sectorAbsoluteRotation))
     layer.add(group)
     this.innerGroupAddEventer(group)
     if (idx === this.startCurrent) {
@@ -535,6 +538,7 @@ class Trochal {
       ],
       name
     })
+
     layer.on('setStartCurrent', ({ id }) => {
       if (wedge.getParent().id() === id) {
         this.fillInnerRadialGradient(wedge)
@@ -899,11 +903,28 @@ class Trochal {
     wedgeName = mapInnerIndexToOuterIndex(wedgeName)
 
     let layer = this.selectLayer(layerName)
+    // const layerName = layer.name()
+    if (layer.name() === 'inner') {
+      // layer = layer.getChildren((node) => node.name() === 'wedgeGroups')[0]
+    }
     return layer
       .getChildren((node) => node.name() === groupName)
       .at(0)
       .getChildren((node) => node.name() === wedgeName)
       .at(0)
+  }
+
+  mapAngleToRange(angle) {
+    const displayInterval = 65
+    if (angle === 0) {
+      return 1
+    } else if (angle > 0 && angle <= displayInterval) {
+      return 1 - angle / displayInterval
+    } else if (angle < 0 && angle >= -displayInterval) {
+      return 1 + angle / displayInterval
+    } else {
+      return 0
+    }
   }
 }
 
