@@ -785,7 +785,7 @@ class Trochal extends DefaultOptions {
       name,
       id,
       shadowBlur: 4,
-      shadowColor: 'rgba(0,0,0,0.6)',
+      shadowColor: 'rgba(0,0,0,0.4)',
       shadowOffset: { x: 0, y: 4 }
     })
     layer.on('setStartCurrent', ({ id }) => {
