@@ -48,143 +48,44 @@
  */
 
 import Konva from 'konva'
-import { ref, onMounted, h, defineComponent } from 'vue'
+import { ref, onMounted } from 'vue'
+import DefaultOptions from './options'
 
-class Trochal {
-  width = 0
-  height = 0
-
+class Trochal extends DefaultOptions {
   /**
-   * A map of layer names to layer objects.
-   * @type {Map<string, Layer>}
-   */
-  layers = new Map()
-
-  /**
-   * The x coordinate of the origin of the filter.
-   * @type {number}
-   */
-  originX = 575
-
-  /**
-   * The y-coordinate of the origin of the filter.
-   * @type {number}
-   */
-  originY = 1080 / 2
-
-  /**
-   * The radius of the circle that the filter is applied to.
-   * @type {number}
-   */
-  radius = 800
-
-  /**
-   * The color to fill the page with.
-   * @type {string}
-   */
-  fill = ''
-
-  /**
-   * A function that takes in a wedge and fills it with the given color.
-   * @param {Wedge} wedge - the wedge to fill
-   * @param {string} color - the color to fill the wedge with
-   * @returns None
-   */
-  innerWedgeFill = {}
-
-  /**
-   * A function that takes in a string of code and returns a string of code that is formatted
-   * to be used as a CSS filter style sheet.
-   * @param {string} code - the code to format
-   * @returns {string} - the formatted code
-   */
-  outerWedgeFill = {}
-
-  /**
-   * The color of the inner wedge of the active fill.
-   */
-  innerWedgeActiveFill = '#BAC6DD'
-
-  /**
-   * The stroke color of the filter.
-   * @type {string}
-   */
-  stroke = 'black'
-
-  /**
-   * The color of the inner wedge stroke.
-   */
-  innerwedgeStroke = '#1D64A0'
-
-  /**
-   * The width of the stroke used to draw the border around the filter.
-   * @type {number}
-   */
-  strokeWidth = 2
-
-  /**
-   * The angle of the inner sector of the circle.
-   * @type {number}
-   */
-  innerSectorAngle = 10
-
-  /**
-   * The angle of the outer sector of the circle.
-   * @type {number}
-   */
-  outerSectorAngle = 30
-
-  /**
-   * The number of children in the outer sector.
-   * @returns {number} - the number of children in the outer sector.
-   */
-  outerSectorAngleChildren = 2.3
-  /**
-   * Starts the current index at the given number.
-   * @param {number} startCurrent - the number to start the current index at.
-   * @returns None
-   */
-  startCurrent = 3
-
-  /**
-   * The starting angle of the current animation.
-   */
-  startCurrentAngle = 0
-
-  padding = 450
-  activeId = 0
-  data = []
-
-  rawData = []
-  /**
-   * Initializes the stage and layers for the filter.
-   * @param {HTMLElement} container - the container for the filter.
+   * Initializes the stage and creates the layers for the stage.
+   * @param {HTMLElement} container - the container for the stage.
    * @returns None
    */
   initStage(container) {
     this.stage = this.createStage(container)
-    this.createLayer('inner')
-    this.createLayer('outerWarp')
-    this.createLayer('outer')
-
-    this.createLayer('innerWarp')
+    ;['inner', 'outerWarp', 'outer', 'innerWarp'].forEach((layerName) => {
+      this.createLayer(layerName)
+    })
   }
+
   /**
-   * Draws the filter.
-   * @returns None
+   * Draws the warp and inner warp.
    */
   draw() {
-    this.drawInnerWarp()
-    this.drawInner()
-
-    this.drawOuterWarp()
-    this.drawOuter()
+    ;['drawInnerWarp', 'drawInner', 'drawOuterWarp', 'drawOuter'].forEach((fn) => this[fn]())
   }
+
+  /**
+   * Draws the inner warp circle.
+   * @returns None
+   */
   drawInnerWarp() {
     this.drawInnerCircle('innerWarp')
   }
+
+  /**
+   * Draws the outer warp layer.
+   * @returns None
+   */
   drawOuterWarp() {
-    const radius = this.radius + this.padding
+    const { radius: initRadius, padding } = this
+    const radius = initRadius + padding
     const strokeLinearGradientColorStops = [
       0,
       'rgba(1,206,255,0)',
@@ -193,15 +94,16 @@ class Trochal {
       1,
       'rgba(1,206,255,0.8)'
     ]
-    let warpLine = this.drawInnerCircle('outerWarp', radius)
-    warpLine.strokeLinearGradientColorStops(strokeLinearGradientColorStops)
 
-    let warpShow = this.drawInnerCircle('outerWarp', radius + 20)
-    warpShow.strokeLinearGradientColorStops(strokeLinearGradientColorStops)
+    let layer = 'outerWarp'
 
-    let warpShowOverlap = this.drawInnerCircle('outerWarp', radius + 35)
-    warpShowOverlap.strokeLinearGradientColorStops(strokeLinearGradientColorStops)
+    function drawWarp(radius) {
+      let warp = this.drawInnerCircle(layer, radius)
+      warp.strokeLinearGradientColorStops(strokeLinearGradientColorStops)
+    }
+    ;[radius, radius + 20, radius + 35].forEach((radius) => drawWarp.call(this, radius))
   }
+
   /**
    * Draws the inner circle of the pie chart.
    * @returns None
@@ -269,8 +171,6 @@ class Trochal {
         name,
         idx
       })
-
-      // group.opacity(0)
     }
   }
 
@@ -584,6 +484,7 @@ class Trochal {
         this.outerAnimation({ wedge })
       }
     })
+
     layer.on('resetFill', ({ wedgeId }) => {
       const innerWedgeName = wedge.name()
       const outerGroupName = wedge.getParent().name().replace('inner', 'outer')
@@ -601,93 +502,91 @@ class Trochal {
 
     return wedge
   }
+
   fillInnerRadialGradient(wedge) {
-    if (Object.keys(this.innerWedgeFill).length === 0) {
-      this.innerWedgeFill = {
-        fillRadialGradientStartRadius: wedge.fillRadialGradientStartRadius(),
-        fillRadialGradientColorStops: wedge.fillRadialGradientColorStops(),
-        strokeLinearGradientColorStops: wedge.strokeLinearGradientColorStops()
-      }
+    const radialGradient = {
+      fillRadialGradientStartRadius: this.radius / 3,
+      fillRadialGradientColorStops: [
+        0,
+        'transparent',
+        0.6,
+        'rgba(6,100,208,0.4)',
+        0.78,
+        '#0658D0',
+        0.88,
+        '#0664D0',
+        1,
+        '#01A5F0'
+      ],
+      strokeLinearGradientColorStops: [
+        0,
+        'rgba(64,149,198,0.0)',
+        0.45,
+        'rgba(64,149,198,0)',
+        0.5,
+        'rgba(64,149,198,0)',
+        0.7,
+        'rgba(64,149,198,0.2)',
+        0.8,
+        'rgba(1,206,255,1)',
+        0.9,
+        'rgba(64,149,198,0.8)',
+        1,
+        'rgba(64,149,198,0.1)'
+      ]
     }
 
-    wedge.fillRadialGradientStartRadius(this.radius / 3)
-    wedge.fillRadialGradientColorStops([
-      0,
-      'transparent',
-      0.6,
-      'rgba(6,100,208,0.4)',
-      0.78,
-      '#0658D0',
-      0.88,
-      '#0664D0',
-      1,
-      '#01A5F0'
-    ])
-    wedge.strokeLinearGradientColorStops([
-      0,
-      'rgba(64,149,198,0.0)',
-      0.45,
-      'rgba(64,149,198,0)',
-      0.5,
-      'rgba(64,149,198,0)',
-      0.7,
-      'rgba(64,149,198,0.2)',
-      0.8,
-      'rgba(1,206,255,1)',
-      0.9,
-      'rgba(64,149,198,0.8)',
-      1,
-      'rgba(64,149,198,0.1)'
-    ])
+    Reflect.ownKeys(radialGradient).forEach((key) => {
+      if (!this.innerWedgeFill[key]) {
+        this.innerWedgeFill[key] = wedge[key]()
+      }
+      wedge[key](radialGradient[key])
+    })
   }
 
   fillOuterRadialGradient(wedge) {
-    if (Object.keys(this.outerWedgeFill).length === 0) {
-      this.outerWedgeFill = {
-        fillRadialGradientColorStops: wedge.fillRadialGradientColorStops(),
-        fillRadialGradientStartRadius: wedge.fillRadialGradientStartRadius(),
-        strokeLinearGradientColorStops: wedge.strokeLinearGradientColorStops(),
-        shadowColor: wedge.shadowColor(),
-        shadowBlur: wedge.shadowBlur(),
-        shadowOffset: wedge.shadowOffset()
-      }
-    }
     const outerRadius = this.radius + this.padding
-    wedge.fillRadialGradientStartRadius(outerRadius / 4)
-    wedge.fillRadialGradientColorStops([
-      0,
-      'transparent',
-      0.5,
-      'rgba(6,100,208,0.05)',
-      0.6,
-      'rgba(6,100,208,0.2)',
-      0.78,
-      'rgba(6,88,208,0.4)',
-      0.9,
-      'rgba(6,100,208,0.8)',
-      1,
-      'rgba(6,100,208,1)'
-    ])
-    wedge.strokeLinearGradientEndPoint({ x: outerRadius, y: outerRadius })
-    wedge.strokeLinearGradientColorStops([
-      0,
-      'rgba(64,149,198,0.0)',
-      0.45,
-      'rgba(64,149,198,0)',
-      0.5,
-      'rgba(64,149,198,0)',
-      0.7,
-      'rgba(64,149,198,0.5)',
-      0.8,
-      'rgba(6,100,208,1)',
-      1,
-      '#01A5F0'
-    ])
-    wedge.shadowColor('rgba(1,165,240,0.4)')
-    wedge.shadowBlur(100)
-    wedge.shadowOffset({
-      x: -10,
-      y: 20
+    const radialGradient = {
+      fillRadialGradientStartRadius: outerRadius / 3,
+      fillRadialGradientColorStops: [
+        0,
+        'transparent',
+        0.5,
+        'rgba(6,100,208,0.05)',
+        0.6,
+        'rgba(6,100,208,0.2)',
+        0.78,
+        'rgba(6,88,208,0.4)',
+        0.9,
+        'rgba(6,100,208,0.8)',
+        1,
+        'rgba(6,100,208,1)'
+      ],
+      strokeLinearGradientEndPoint: { x: outerRadius, y: outerRadius },
+      strokeLinearGradientColorStops: [
+        0,
+        'rgba(64,149,198,0.0)',
+        0.45,
+        'rgba(64,149,198,0)',
+        0.5,
+        'rgba(64,149,198,0)',
+        0.7,
+        'rgba(64,149,198,0.5)',
+        0.8,
+        'rgba(6,100,208,1)',
+        1,
+        '#01A5F0'
+      ],
+      shadowColor: 'rgba(1,165,240,0.4)',
+      shadowBlur: 100,
+      shadowOffset: { x: -10, y: 20 }
+    }
+
+    Reflect.ownKeys(radialGradient).forEach((key) => {
+      if (!this.outerWedgeFill[key]) {
+        this.outerWedgeFill[key] = wedge[key]()
+      }
+      wedge[key](radialGradient[key])
     })
   }
   /**
@@ -1006,165 +905,4 @@ function useTrochal(container, options) {
   })
   return trochal
 }
-
-export default defineComponent({
-  name: 'Trochal',
-  props: {
-    width: {
-      type: Number,
-      default() {
-        return 1920
-      }
-    },
-    height: {
-      type: Number,
-      default() {
-        return 1080
-      }
-    },
-    data: {
-      type: Array,
-      default() {
-        return [
-          {
-            name: '云网能力',
-            value: [
-              { name: '云计算', value: 10 },
-              { name: '云存储', value: 10 },
-              { name: '大数据', value: 10 },
-              { name: '人工智能', value: 10 },
-              { name: '物联网', value: 10 },
-              { name: '视联网', value: 10 },
-              { name: '网络信息安全', value: 10 },
-              { name: '企业应用与服务', value: 10 }
-            ]
-          },
-          {
-            name: '云服务',
-            value: [
-              { name: '大数据', value: 10 },
-              { name: '人工智能', value: 10 },
-              { name: '物联网', value: 10 },
-              { name: '视联网', value: 10 },
-              { name: '网络信息安全', value: 10 },
-              { name: '企业应用与服务', value: 10 }
-            ]
-          },
-          {
-            name: '大数据',
-            value: [
-              { name: '云计算-1', value: 10 },
-              { name: '云存储-1', value: 10 },
-              { name: '云安全-1', value: 10 },
-              { name: '云服务-1', value: 10 },
-              { name: '大数据-1', value: 10 },
-              { name: '人工智能-1', value: 10 },
-              { name: '物联网-1', value: 10 },
-              { name: '视联网-1', value: 10 },
-              { name: '网络信息安全-1', value: 10 },
-              { name: '企业应用与服务-1', value: 10 },
-              { name: '云计算-1', value: 10 },
-              { name: '云存储-1', value: 10 },
-              { name: '云安全-1', value: 10 },
-              { name: '云服务-1', value: 10 },
-              { name: '大数据-1', value: 10 },
-              { name: '云服务-1', value: 10 },
-              { name: '大数据-1', value: 10 }
-            ]
-          },
-          {
-            name: '人工智能',
-            value: [
-              { name: '云计算-1', value: 10 },
-              { name: '云存储-1', value: 10 },
-              { name: '云安全-1', value: 10 },
-              { name: '云服务-1', value: 10 },
-              { name: '大数据-1', value: 10 },
-              { name: '人工智能-1', value: 10 },
-              { name: '物联网-1', value: 10 },
-              { name: '视联网-1', value: 10 },
-              { name: '网络信息安全-1', value: 10 },
-              { name: '企业应用与服务-1', value: 10 },
-              { name: '云计算-1', value: 10 },
-              { name: '云存储-1', value: 10 },
-              { name: '云安全-1', value: 10 },
-              { name: '云服务-1', value: 10 },
-              { name: '大数据-1', value: 10 },
-              { name: '云服务-1', value: 10 },
-              { name: '大数据-1', value: 10 }
-            ]
-          },
-          {
-            name: '物联网',
-            value: [
-              { name: '云存储', value: 10 },
-              { name: '大数据', value: 10 }
-            ]
-          },
-          {
-            name: '视联网',
-            value: [
-              { name: '云存储', value: 10 },
-              { name: '大数据', value: 10 }
-            ]
-          },
-          {
-            name: '网络信息安全',
-            value: [
-              { name: '云计算', value: 10 },
-              { name: '云存储', value: 10 },
-              { name: '云安全', value: 10 },
-              { name: '云服务', value: 10 },
-              { name: '网络信息安全', value: 10 },
-              { name: '企业应用与服务', value: 10 }
-            ]
-          },
-          {
-            name: '企业应用与服务',
-            value: [
-              { name: '云计算', value: 10 },
-              { name: '云存储', value: 10 },
-              { name: '云服务', value: 10 },
-              { name: '大数据', value: 10 },
-              { name: '人工智能', value: 10 },
-              { name: '物联网', value: 10 },
-              { name: '视联网', value: 10 },
-              { name: '网络信息安全', value: 10 },
-              { name: '企业应用与服务', value: 10 }
-            ]
-          },
-          {
-            name: '视频服务',
-            value: [
-              { name: '云计算', value: 10 },
-              { name: '云存储', value: 10 },
-              { name: '云安全', value: 10 },
-              { name: '云服务', value: 10 },
-              { name: '大数据', value: 10 },
-              { name: '人工智能', value: 10 },
-              { name: '物联网', value: 10 },
-              { name: '视联网', value: 10 },
-              { name: '网络信息安全', value: 10 },
-              { name: '企业应用与服务', value: 10 }
-            ]
-          }
-          // { name: '安全', value: 10 },
-          // { name: '行业', value: 10 },
-          // { name: '其他', value: 10 }
-        ]
-      }
-    }
-  },
-  setup(props) {
-    const container = ref(null)
-    useTrochal(container, props)
-    return () =>
-      h('div', {
-        style: {
-          width: `${props.width}px`,
-          height: `${props.height}px`
-        },
-        ref: container
-      })
-  }
-})
+export default useTrochal
