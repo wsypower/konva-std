@@ -345,6 +345,10 @@ class Trochal extends DefaultOptions {
     })
 
     group.add(sector)
+
+    const rect = this.createInnerArc({ sector, id, name })
+
+    group.add(rect)
     if (this.data[idx]) {
       const text = this.createText({
         rotation: rotation + angle / 2.6,
@@ -362,6 +366,46 @@ class Trochal extends DefaultOptions {
     const sectorAbsoluteRotation = sector.getAbsoluteRotation()
     group.opacity(this.mapAngleToRange(sectorAbsoluteRotation))
 
+    return group
+  }
+
+  createInnerArc({ sector, id }) {
+    const angle = sector.angle()
+    const rotation = sector.rotation()
+    const layer = this.selectLayer('inner')
+    const group = this.createGroup({
+      name: `${id}-act`,
+      id: `${id}-act`
+    })
+    const act = new Konva.Arc({
+      x: this.originX,
+      y: this.originY,
+      innerRadius: this.radius,
+      outerRadius: this.radius + 18,
+      fill: 'rgba(1,206,255,1)',
+      stroke: 'black',
+      strokeWidth: 0,
+      angle: angle,
+      rotation: rotation,
+      shadowBlur: 20,
+      shadowColor: 'rgba(1,206,255,1)',
+      shadowOffset: { x: -5, y: 0 }
+    })
+    layer.on('setStartCurrent', ({ id }) => {
+      let wedgeGroup = group.getParent()
+      if (wedgeGroup.id() === id) {
+        group.show()
+      }
+    })
+    layer.on('setActiveFill', ({ actId }) => {
+      if (group.id() === actId) {
+        group.show()
+      } else {
+        group.hide()
+      }
+    })
+    group.hide()
+    group.add(act)
     return group
   }
 
@@ -415,10 +459,10 @@ class Trochal extends DefaultOptions {
 
     const wedge = group.getChildren((node) => node.getClassName() === 'Wedge').at(0)
     const text = group.getChildren((node) => node.getClassName() === 'Text').at(0)
-
+    const act = group.getChildren((node) => node.getClassName() === 'Group').at(0)
     group.on('click', function () {
       layer.fire('resetFill', { wedgeId: wedge.id(), textId: text.id() })
-      layer.fire('setActiveFill', { wedgeId: wedge.id(), textId: text.id() })
+      layer.fire('setActiveFill', { wedgeId: wedge.id(), textId: text.id(), actId: act.id() })
     })
   }
 
