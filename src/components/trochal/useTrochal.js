@@ -824,44 +824,37 @@ class Trochal {
    */
   innerAnimation({ wedge }) {
     const layer = this.selectLayer('inner')
-    const wedgeRotation = wedge.getRotation()
-    const rotation = layer.getRotation()
+    const wedgeRotation = wedge.getAbsoluteRotation()
+    const layerCurrentRotation = layer.getRotation()
+    const rotation = layerCurrentRotation - wedgeRotation + this.startCurrentAngle
 
-    let targetAngle = rotation - (wedgeRotation - this.startCurrentAngle + rotation)
-
-    if (targetAngle >= 0) {
-      targetAngle = targetAngle - 360
-    }
-    if (targetAngle <= -180) {
-      targetAngle = targetAngle + 360
-    }
-
+    const wedgesGroup = layer.getChildren((node) => node.name().includes('group'))
     const tween = new Konva.Tween({
       node: layer,
       duration: 1,
       easing: Konva.Easings.EaseInOut,
-      rotation: targetAngle,
-      onUpdate: () => {
-        const wedgesGroup = layer.getChildren((node) => node.name().includes('group'))
-        for (let i = 0; i < wedgesGroup.length; i++) {
-          const group = wedgesGroup[i]
-          const wedge = group
-            .getChildren((node) => {
-              return node.name().includes('sector')
-            })
-            .at(0)
-          const targetRotation = wedge.getAbsoluteRotation()
-          let opacity = this.mapAngleToRange(targetRotation)
-          if (this.activeId === wedge.id()) {
-            opacity = 1
-          }
-          group.opacity(opacity)
-        }
-      }
+      rotation,
+      onUpdate: () => this.wedgeOpacityAnimation(wedgesGroup)
     })
     tween.play()
   }
 
+  wedgeOpacityAnimation(wedgesGroup) {
+    for (let i = 0; i < wedgesGroup.length; i++) {
+      const group = wedgesGroup[i]
+      const wedge = group
+        .getChildren((node) => {
+          return node.name().includes('sector')
+        })
+        .at(0)
+      const targetRotation = wedge.getAbsoluteRotation()
+      let opacity = this.mapAngleToRange(targetRotation)
+      if (this.activeId === wedge.id()) {
+        opacity = 1
+      }
+      group.opacity(opacity)
+    }
+  }
   /**
    * An animation that rotates the outer layer of the wedge.
    * @param {Wedge} wedge - the wedge to rotate
