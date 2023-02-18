@@ -99,7 +99,6 @@ class Trochal extends DefaultOptions {
     function drawWarp(radius) {
       let warp = this.drawInnerCircle(layer, radius)
       warp.strokeLinearGradientColorStops(strokeLinearGradientColorStops)
-      // warp.blurRadius(100)
       warp.fillRadialGradientStartPoint({ x: 0, y: 0 })
       warp.fillRadialGradientEndPoint({ x: 0, y: 0 })
       warp.fillRadialGradientStartRadius(radius / 2)
@@ -793,7 +792,7 @@ class Trochal extends DefaultOptions {
       text: value,
       fontSize: 20,
       padding: 0,
-      fill: 'white',
+      fill: '#abe6f9',
       fontStyle: 'bold',
       strokeWidth: 3,
       height: this.outerSectorAngleChildren,
@@ -802,7 +801,7 @@ class Trochal extends DefaultOptions {
       offsetX,
       offsetY,
       rotation,
-      opacity: 0.6,
+      opacity: 0.5,
       id,
       name
     })
@@ -810,7 +809,7 @@ class Trochal extends DefaultOptions {
       if (arr.includes(text)) {
         text.opacity(1)
       } else {
-        text.opacity(0.6)
+        text.opacity(0.5)
       }
     })
     return text
