@@ -564,35 +564,31 @@ class Trochal extends DefaultOptions {
   fillOuterRadialGradient(wedge) {
     const outerRadius = this.radius + this.padding
     const radialGradient = {
-      fillRadialGradientStartRadius: outerRadius / 3,
+      fillRadialGradientStartRadius: outerRadius / 2,
       fillRadialGradientColorStops: [
         0,
         'transparent',
         0.5,
-        'rgba(6,100,208,0.05)',
-        0.6,
-        'rgba(6,100,208,0.2)',
-        0.78,
-        'rgba(6,88,208,0.4)',
-        0.9,
-        'rgba(6,100,208,0.8)',
+        'rgba(6,100,208,0.15)',
         1,
-        'rgba(6,100,208,1)'
+        'rgba(6,100,208,0.9)'
       ],
-      strokeLinearGradientEndPoint: { x: outerRadius, y: outerRadius },
+      // strokeLinearGradientEndPoint: { x: outerRadius / 2, y: outerRadius / 2 },
       strokeLinearGradientColorStops: [
         0,
         'rgba(64,149,198,0.0)',
         0.45,
         'rgba(64,149,198,0)',
         0.5,
-        'rgba(64,149,198,0)',
+        'rgba(6,100,208,0)',
         0.7,
-        'rgba(64,149,198,0.5)',
+        'rgba(1,206,255,0)',
         0.8,
-        'rgba(6,100,208,1)',
+        'rgba(1,206,255,0.4)',
+        0.9,
+        'rgba(1,206,255,0.6)',
         1,
-        '#01A5F0'
+        'rgba(6,100,208,0)'
       ],
       shadowColor: 'rgba(1,165,240,0.4)',
       shadowBlur: 100,
