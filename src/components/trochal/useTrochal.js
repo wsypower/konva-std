@@ -50,7 +50,6 @@
 import Konva from 'konva'
 import { ref, onMounted } from 'vue'
 import DefaultOptions from './options'
-
 class Trochal extends DefaultOptions {
   /**
    * Initializes the stage and creates the layers for the stage.
@@ -377,20 +376,55 @@ class Trochal extends DefaultOptions {
       name: `${id}-act`,
       id: `${id}-act`
     })
+    const actColor = 'rgba(1, 206, 255, 1)'
+
     const act = new Konva.Arc({
       x: this.originX,
       y: this.originY,
       innerRadius: this.radius,
       outerRadius: this.radius + 18,
-      fill: 'rgba(1,206,255,1)',
+      fill: actColor,
       stroke: 'black',
       strokeWidth: 0,
       angle: angle,
       rotation: rotation,
       shadowBlur: 20,
-      shadowColor: 'rgba(1,206,255,1)',
+      shadowColor: actColor,
       shadowOffset: { x: -5, y: 0 }
     })
+
+    const midRadius = (act.getOuterRadius() + act.getInnerRadius()) / 2
+
+    const actCenterX =
+      act.x() + midRadius * Math.cos(((act.getAngle() / 2 + act.getRotation()) * Math.PI) / 180)
+    const actCenterY =
+      act.y() + midRadius * Math.sin(((act.getAngle() / 2 + act.getRotation()) * Math.PI) / 180)
+
+    const triangleRadius = 12
+    const trianglePoints = [
+      actCenterX,
+      actCenterY + triangleRadius / 2,
+      actCenterX + triangleRadius,
+      actCenterY + triangleRadius,
+      actCenterX - triangleRadius,
+      actCenterY + triangleRadius
+    ]
+    const triangle = new Konva.Line({
+      points: trianglePoints,
+      fill: 'black',
+      closed: true,
+      x: actCenterX,
+      y: actCenterY,
+      angle: angle,
+      rotation: rotation + 95,
+      offset: {
+        x: actCenterX,
+        y: actCenterY + triangleRadius / 1.5
+      },
+      opacity: 0.5,
+      name: 'triangle'
+    })
+
     layer.on('setStartCurrent', ({ id }) => {
       let wedgeGroup = group.getParent()
       if (wedgeGroup.id() === id) {
@@ -406,6 +440,7 @@ class Trochal extends DefaultOptions {
     })
     group.hide()
     group.add(act)
+    group.add(triangle)
     return group
   }
 
