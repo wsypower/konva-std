@@ -473,7 +473,7 @@ class Trochal extends DefaultOptions {
           value: children[i].name,
           offsetX: -this.padding - this.radius * 0.6,
           offsetY: -22,
-          name: `${id}-sector`,
+          name: `${id}-text`,
           id: `${id}-text`,
           idx
         })
@@ -481,6 +481,7 @@ class Trochal extends DefaultOptions {
       }
     }
     layer.add(group)
+
     return group
   }
 
@@ -566,6 +567,10 @@ class Trochal extends DefaultOptions {
           const outerGroupName = wedge.getParent().name().replace('inner', 'outer')
           const outerWedgeName = innerWedgeName.replace('inner', 'outer')
           const outerWedge = this.searchWedge('outer', outerGroupName, outerWedgeName)
+
+          const outerGroup = outerWedge.getParent()
+          const outerTextArr = outerGroup.getChildren((node) => node.name().includes('text'))
+          this.selectLayer('outer').fire('setActiveFill', outerTextArr)
           this.fillOuterRadialGradient(outerWedge)
         })
       }
@@ -778,9 +783,10 @@ class Trochal extends DefaultOptions {
    * @param {string} value - the value of the text object.
    * @returns {Konva.Text} - the text object.
    */
-  createOuterText({ rotation, value, offsetX, offsetY }) {
+  createOuterText({ rotation, value, offsetX, offsetY, id, name }) {
     const { originX: x, originY: y } = this
-    const layer = this.selectLayer('inner')
+    const layer = this.selectLayer('outer')
+
     const text = new Konva.Text({
       x,
       y,
@@ -795,14 +801,16 @@ class Trochal extends DefaultOptions {
       verticalAlign: 'center',
       offsetX,
       offsetY,
-      rotation
+      rotation,
+      opacity: 0.6,
+      id,
+      name
     })
-    layer.on('setStartCurrent', ({ id }) => {
-      if (text.getParent().id() === id) {
-      }
-    })
-    layer.on('setActiveFill', ({ textId }) => {
-      if (text.id() === textId) {
+    layer.on('setActiveFill', (arr) => {
+      if (arr.includes(text)) {
+        text.opacity(1)
+      } else {
+        text.opacity(0.6)
       }
     })
     return text
@@ -856,6 +864,9 @@ class Trochal extends DefaultOptions {
     const outerGroupName = wedge.getParent().name().replace('inner', 'outer')
     const outerWedgeName = innerWedgeName.replace('inner', 'outer')
     const outerWedge = this.searchWedge('outer', outerGroupName, outerWedgeName)
+    const outerGroup = outerWedge.getParent()
+    const outerTextArr = outerGroup.getChildren((node) => node.name().includes('text'))
+    layer.fire('setActiveFill', outerTextArr)
     this.fillOuterRadialGradient(outerWedge)
     const outerAngle = outerWedge.getRotation()
     const rotation = layer.getRotation()
