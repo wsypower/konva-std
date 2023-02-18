@@ -444,6 +444,7 @@ class Trochal {
     }
     const sectorAbsoluteRotation = sector.getAbsoluteRotation()
     group.opacity(this.mapAngleToRange(sectorAbsoluteRotation))
+
     return group
   }
 
@@ -840,9 +841,8 @@ class Trochal {
       duration: 1,
       easing: Konva.Easings.EaseInOut,
       rotation: targetAngle,
-      onFinish: () => {
+      onUpdate: () => {
         const wedgesGroup = layer.getChildren((node) => node.name().includes('group'))
-
         for (let i = 0; i < wedgesGroup.length; i++) {
           const group = wedgesGroup[i]
           const wedge = group
@@ -850,21 +850,12 @@ class Trochal {
               return node.name().includes('sector')
             })
             .at(0)
-
           const targetRotation = wedge.getAbsoluteRotation()
-
           let opacity = this.mapAngleToRange(targetRotation)
-          let duration = 0.5
           if (this.activeId === wedge.id()) {
             opacity = 1
-            duration = 0
           }
-          new Konva.Tween({
-            node: group,
-            duration,
-            easing: Konva.Easings.Linear,
-            opacity: opacity
-          }).play()
+          group.opacity(opacity)
         }
       }
     })
@@ -944,22 +935,17 @@ class Trochal {
   searchWedge(layerName, groupName, wedgeName) {
     const mapInnerIndexToOuterIndex = (name) =>
       name.replace(/\d+/s, (match) => match % this.rawData.length)
-
     groupName = mapInnerIndexToOuterIndex(groupName)
-
     wedgeName = mapInnerIndexToOuterIndex(wedgeName)
 
     let layer = this.selectLayer(layerName)
-    // const layerName = layer.name()
-    if (layer.name() === 'inner') {
-      // layer = layer.getChildren((node) => node.name() === 'wedgeGroups')[0]
-    }
     return layer
       .getChildren((node) => node.name() === groupName)
       .at(0)
       .getChildren((node) => node.name() === wedgeName)
       .at(0)
   }
+
   active({ wedge, group }) {
     if (group) {
       group.opacity(1)
@@ -967,6 +953,7 @@ class Trochal {
       wedge.getParent().opacity(1)
     }
   }
+
   mapAngleToRange(angle) {
     const displayInterval = 65
     if (angle === 0) {
