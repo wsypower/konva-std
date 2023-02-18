@@ -424,6 +424,26 @@ class Trochal extends DefaultOptions {
       name: 'triangle'
     })
 
+    // const WedgeTop = [
+    //   act.x() + midRadius * Math.cos(((act.getAngle() + act.getRotation()) * Math.PI) / 180),
+    //   act.y() + midRadius * Math.sin(((act.getAngle() + act.getRotation()) * Math.PI) / 180)
+    // ]
+    // const WedgeOrigin = [this.originX, this.originY]
+    // const wedgeBottom = [this.originX, this.originY + 160]
+
+    // const light = new Konva.Line({
+    //   points: [...WedgeTop, ...WedgeOrigin, ...wedgeBottom],
+    //   fill: '#fff',
+    //   closed: true,
+    //   opacity: 0.6,
+    //   x: this.originX,
+    //   y: this.originY,
+    //   offset: {
+    //     x: this.originX,
+    //     y: this.originY
+    //   }
+    // })
+
     layer.on('setStartCurrent', ({ id }) => {
       let wedgeGroup = group.getParent()
       if (wedgeGroup.id() === id) {
@@ -440,6 +460,7 @@ class Trochal extends DefaultOptions {
     group.hide()
     group.add(act)
     group.add(triangle)
+    // group.add(light)
     return group
   }
 
@@ -762,7 +783,10 @@ class Trochal extends DefaultOptions {
       offsetX: -radius * 0.7,
       rotation,
       name,
-      id
+      id,
+      shadowBlur: 4,
+      shadowColor: 'rgba(0,0,0,0.6)',
+      shadowOffset: { x: 0, y: 4 }
     })
     layer.on('setStartCurrent', ({ id }) => {
       if (text.getParent().id() === id) {
