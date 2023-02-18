@@ -92,7 +92,7 @@ class Trochal extends DefaultOptions {
       0.9,
       'rgba(1,206,255,0)',
       1,
-      'rgba(1,206,255,0.8)'
+      'rgba(1,206,255,0.6)'
     ]
 
     let layer = 'outerWarp'
@@ -100,8 +100,23 @@ class Trochal extends DefaultOptions {
     function drawWarp(radius) {
       let warp = this.drawInnerCircle(layer, radius)
       warp.strokeLinearGradientColorStops(strokeLinearGradientColorStops)
+      // warp.blurRadius(100)
+      warp.fillRadialGradientStartPoint({ x: 0, y: 0 })
+      warp.fillRadialGradientEndPoint({ x: 0, y: 0 })
+      warp.fillRadialGradientStartRadius(radius / 2)
+      warp.fillRadialGradientEndRadius(radius)
+      warp.fillRadialGradientColorStops([
+        0,
+        'rgba(64,149,198,0.0)',
+        0.9,
+        'rgba(64,149,198,0.01)',
+        0.95,
+        'rgba(64,149,198,0.04)',
+        1,
+        'rgba(1,206,255,0.04)'
+      ])
     }
-    ;[radius, radius + 20, radius + 35].forEach((radius) => drawWarp.call(this, radius))
+    ;[radius, radius + 15, radius + 25].forEach((radius) => drawWarp.call(this, radius))
   }
 
   /**
@@ -192,13 +207,15 @@ class Trochal extends DefaultOptions {
         'rgba(1,206,255,0)',
         0.8,
         'rgba(1,206,255,0)',
+        0.9,
+        '#0664D0',
         1,
         'rgba(1,206,255,1)'
       ],
-      shadowColor: 'black',
+      shadowColor: '#0664D0',
       shadowBlur: 20,
       shadowOffset: {
-        x: 10,
+        x: -1,
         y: 0
       }
     })
