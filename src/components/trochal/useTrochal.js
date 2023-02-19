@@ -50,6 +50,7 @@
 import Konva from 'konva'
 import { ref, onMounted } from 'vue'
 import DefaultOptions from './options'
+import icon from './icon.png'
 class Trochal extends DefaultOptions {
   /**
    * Initializes the stage and creates the layers for the stage.
@@ -357,6 +358,12 @@ class Trochal extends DefaultOptions {
       group.add(text)
     }
     layer.add(group)
+
+    const icon = this.createIcon({
+      rotation: rotation
+    })
+    group.add(icon)
+
     this.innerGroupAddEventer(group)
     if (idx === this.startCurrent) {
       layer.fire('setStartCurrent', { id: group.id() })
@@ -366,7 +373,22 @@ class Trochal extends DefaultOptions {
 
     return group
   }
-
+  createIcon({ rotation }) {
+    var imageObj = new Image()
+    imageObj.src = icon
+    const { originX: x, originY: y, radius } = this
+    const iconImage = new Konva.Image({
+      image: imageObj,
+      x,
+      y,
+      width: 50,
+      height: 50,
+      offsetX: -radius * 0.7 + 75,
+      offsetY: -16,
+      rotation
+    })
+    return iconImage
+  }
   createInnerArc({ sector, id }) {
     const angle = sector.angle()
     const rotation = sector.rotation()
@@ -424,26 +446,6 @@ class Trochal extends DefaultOptions {
       name: 'triangle'
     })
 
-    // const WedgeTop = [
-    //   act.x() + midRadius * Math.cos(((act.getAngle() + act.getRotation()) * Math.PI) / 180),
-    //   act.y() + midRadius * Math.sin(((act.getAngle() + act.getRotation()) * Math.PI) / 180)
-    // ]
-    // const WedgeOrigin = [this.originX, this.originY]
-    // const wedgeBottom = [this.originX, this.originY + 160]
-
-    // const light = new Konva.Line({
-    //   points: [...WedgeTop, ...WedgeOrigin, ...wedgeBottom],
-    //   fill: '#fff',
-    //   closed: true,
-    //   opacity: 0.6,
-    //   x: this.originX,
-    //   y: this.originY,
-    //   offset: {
-    //     x: this.originX,
-    //     y: this.originY
-    //   }
-    // })
-
     layer.on('setStartCurrent', ({ id }) => {
       let wedgeGroup = group.getParent()
       if (wedgeGroup.id() === id) {
@@ -460,7 +462,6 @@ class Trochal extends DefaultOptions {
     group.hide()
     group.add(act)
     group.add(triangle)
-    // group.add(light)
     return group
   }
 
