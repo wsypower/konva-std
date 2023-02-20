@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-11 15:30:05
- * @LastEditTime: 2023-02-20 09:25:11
+ * @LastEditTime: 2023-02-20 10:49:03
  * @LastEditors: wsy
 -->
 <template>
@@ -17,11 +17,15 @@
       left="40px"
       top="-60px"
     ></video>
-    <trochal class="absolute"></trochal>
+    <trochal class="absolute" @click="callback"></trochal>
   </div>
 </template>
 
 <script setup>
   import video from './AI-60fps.mp4'
   import trochal from '@/components/trochal'
+  // 事件监听
+  // function callback(url) {
+  //   console.log('url', url)
+  // }
 </script>

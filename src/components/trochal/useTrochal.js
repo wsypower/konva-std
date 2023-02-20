@@ -59,7 +59,7 @@ class Trochal extends DefaultOptions {
    */
   initStage(container) {
     this.stage = this.createStage(container)
-    ;['inner', 'outerWarp', 'outer', 'innerWarp'].forEach((layerName) => {
+    ;['inner', 'outerWarp', 'innerWarp', 'outer'].forEach((layerName) => {
       this.createLayer(layerName)
     })
   }
@@ -275,7 +275,12 @@ class Trochal extends DefaultOptions {
     this.layers.set(name, layer)
     this.stage.add(layer)
     layer.zIndex(0)
-
+    if (name === 'outerWarp') {
+      layer.on('click', (target) => {
+        const { x, y } = target.evt
+        layer.fire('childrenClick', { x, y })
+      })
+    }
     return layer
   }
 
@@ -498,6 +503,7 @@ class Trochal extends DefaultOptions {
           id: `${id}-text`,
           idx
         })
+        text.richValue = children[i].value
         group.add(text)
       }
     }
@@ -810,7 +816,7 @@ class Trochal extends DefaultOptions {
   createOuterText({ rotation, value, offsetX, offsetY, id, name }) {
     const { originX: x, originY: y } = this
     const layer = this.selectLayer('outer')
-
+    const layerWarp = this.selectLayer('outerWarp')
     const text = new Konva.Text({
       x,
       y,
@@ -820,8 +826,9 @@ class Trochal extends DefaultOptions {
       fill: '#abe6f9',
       fontStyle: 'bold',
       strokeWidth: 3,
-      height: this.outerSectorAngleChildren,
-      align: 'center',
+      width: 200,
+      height: 40,
+      align: 'left',
       verticalAlign: 'center',
       offsetX,
       offsetY,
@@ -835,6 +842,11 @@ class Trochal extends DefaultOptions {
         text.opacity(1)
       } else {
         text.opacity(0.5)
+      }
+    })
+    layerWarp.on('childrenClick', (area) => {
+      if (text.intersects(area)) {
+        this.childrenEvent(text.richValue)
       }
     })
     return text
@@ -985,6 +997,10 @@ class Trochal extends DefaultOptions {
       return 0
     }
   }
+
+  childrenEvent(value) {
+    this.callback(value)
+  }
 }
 
 function chunk(arr, size) {
@@ -1016,18 +1032,19 @@ function extend(origin, target) {
  * @param {TrochalOptions} [options] - The options for the trochal instance.
  * @returns {Trochal} - A new Trochal instance.
  */
-function createTrochal(container, options) {
+function createTrochal(container, options, callback) {
   const layout = unref(container)
   const trochal = new Trochal()
   extend(trochal, options)
+  trochal.callback = callback
   trochal.initStage(layout)
   return trochal
 }
 
-function useTrochal(container, options) {
+function useTrochal(container, options, callback) {
   const trochal = ref(null)
   onMounted(() => {
-    const trochal = createTrochal(container, options)
+    const trochal = createTrochal(container, options, callback)
     trochal.draw()
   })
   return trochal

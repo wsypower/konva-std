@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2023-02-20 08:32:35
- * @LastEditTime: 2023-02-20 09:26:20
+ * @LastEditTime: 2023-02-20 10:42:46
  * @LastEditors: wsy
  */
 export default class DefaultOptions {
@@ -64,7 +64,7 @@ export default class DefaultOptions {
    * The angle of the inner sector of the circle.
    * @type {number}
    */
-  innerSectorAngle = 8
+  innerSectorAngle = 10
 
   /**
    * The angle of the outer sector of the circle.
@@ -94,4 +94,6 @@ export default class DefaultOptions {
   data = []
 
   rawData = []
+
+  callback = () => {}
 }
