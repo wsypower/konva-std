@@ -1,3 +1,10 @@
+/*
+ * @Description:
+ * @Author: wsy
+ * @Date: 2023-02-20 08:32:35
+ * @LastEditTime: 2023-02-20 09:26:20
+ * @LastEditors: wsy
+ */
 export default class DefaultOptions {
   width = 0
   height = 0
@@ -12,7 +19,7 @@ export default class DefaultOptions {
    * The x coordinate of the origin of the filter.
    * @type {number}
    */
-  originX = 575
+  originX = 620
 
   /**
    * The y-coordinate of the origin of the filter.
@@ -57,7 +64,7 @@ export default class DefaultOptions {
    * The angle of the inner sector of the circle.
    * @type {number}
    */
-  innerSectorAngle = 10
+  innerSectorAngle = 8
 
   /**
    * The angle of the outer sector of the circle.
@@ -75,7 +82,7 @@ export default class DefaultOptions {
    * @param {number} startCurrent - the number to start the current index at.
    * @returns None
    */
-  startCurrent = 3
+  startCurrent = 2
 
   /**
    * The starting angle of the current animation.
