@@ -2,7 +2,7 @@
  * @Description:
  * @Author: wsy
  * @Date: 2022-07-11 15:30:05
- * @LastEditTime: 2023-02-20 10:49:03
+ * @LastEditTime: 2023-02-20 10:50:19
  * @LastEditors: wsy
 -->
 <template>
@@ -25,7 +25,5 @@
   import video from './AI-60fps.mp4'
   import trochal from '@/components/trochal'
   // 事件监听
-  // function callback(url) {
-  //   console.log('url', url)
-  // }
+  function callback() {}
 </script>
